@@ -1,0 +1,66 @@
+pre {
+  padding: 10 10px;
+  overflow: auto; 
+  background-color: lightgray;
+  border: 1px solid rgb(215, 215, 215);
+  box-shadow: rgb(238, 238, 238) 0px 0px 1em;
+  border-radius: 0.3em;
+}
+
+/* xmp = similar to pre tag but able to write xml codes without escape characters */
+xmp {
+  padding: 10 10px;
+  overflow: auto;
+  background-color: lightgray;
+  border: 1px solid rgb(215, 215, 215);
+  box-shadow: rgb(238, 238, 238) 0px 0px 1em;
+  border-radius: 0.3em;
+}
+
+code {
+  background-color: lightgrey;
+  padding: 5px;
+  border-radius: 0.3em;
+}
+
+table, th, td {border: 1px solid black; border-collapse: collapse; padding: 4px;} 
+table tr td.value, 
+table tr td.mono {font-family: Monospace;} 
+table tr td.value {text-align: right;} 
+
+table tr td.valuered, 
+table tr td.mono {font-family: Monospace; font-weight: bold; background-color: red;} 
+table tr td.valuered {text-align: right;} 
+table tr td.valuegreen, 
+table tr td.mono {font-family: Monospace; font-weight: bold; background-color: lightgreen;} 
+table tr td.valuegreen {text-align: right;} 
+
+table p {margin: 0.2em;}
+table tr.parent td:not(.hdr) {background-color: #D8E8C2;} 
+table tr.child td {background-color: #BBDD97; border-top-style: hidden;} 
+table.stat tr:nth-child(even), 
+table.setlist tr:nth-child(even) {background-color: #eee;} 
+table.stat tr:nth-child(odd), 
+table.setlist tr:nth-child(odd) {background-color: #fff;} 
+table tr:hover td:not(.hdr) {background-color:#d9ffcc} 
+table th {color: black; background-color: #ffcc99;}
+table tr:target,td:target {border: solid; border-width: medium; border-color: limegreen;}
+table tr:target td:first-of-type, 
+table td:target {font-weight: bold;}
+
+/* Style the iframe to fit the menu */
+iframe {
+    width: 100%;  /* Make the iframe span the full width */
+    height: 50px; /* Set the height to fit the menu */
+    border: none; /* Remove the iframe border */
+    position: fixed; /* Fix the iframe to the top of the viewport */
+    top: 0; /* Position it at the top */
+    left: 0; /* Align it with the left edge */
+    z-index: 999; /* Ensure it stays on top of other content */
+}
+
+/* Add some padding to the top of the body content to prevent it from being hidden behind the fixed menu */
+body {
+    padding-top: 50px; /* Adjust this value based on the height of the iframe */
+}
+

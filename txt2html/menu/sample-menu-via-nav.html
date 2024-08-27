@@ -1,0 +1,64 @@
+<!-- menu.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu</title>
+    <style>
+        /* Style the navigation menu to be horizontal and fixed */
+        nav ul {
+            list-style-type: none; /* Remove bullet points */
+            margin: 0;
+            padding: 0;
+            background-color: #333; /* Background color */
+            display: flex; /* Display the menu items in a row */
+            justify-content: flex-start; /* Align items to the start (left) */
+            position: fixed; /* Fix the menu to the top of the viewport */
+            top: 0; /* Position it at the top */
+            left: 0; /* Position it at the left edge */
+            width: 100%; /* Make the menu span the full width */
+            z-index: 1000; /* Ensure the menu stays on top of other elements */
+        }
+
+        /* Style each menu item */
+        nav ul li {
+            margin: 0; /* Remove margin from each list item */
+        }
+
+        /* Style the links */
+        nav ul li a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        /* Change the link color on hover */
+        nav ul li a:hover {
+            background-color: #111;
+        }
+
+        /* Add some padding to the top of the body content to prevent it from being hidden behind the fixed menu */
+        body {
+            padding-top: 50px; /* Adjust this value based on the height of the menu */
+        }
+    </style>
+</head>
+<body>
+<!-- Navigation Menu -->
+<nav>
+    <ul>
+        <li><a  href="PG-00-0-main.html">PG</a></li>
+        <li><a  href="PG-01-0-optional.html">Optional</a></li>
+        <li><a  href="PG-02-0-required.html">Required</a></li>
+        <li><a  href="PG-03-0-postgresql.html">PostgreSQL</a></li>
+        <li><a  href="PG-04-0-barman.html">BaRMan</a></li>
+        <li><a  href="PG-05-0-replication-wal-stream.html">Replication</a></li>
+        <li><a  href="PG-06-0-pgpool.html">PgPool</a></li>
+        <li><a  href="PG-07-0-patroni.html">Patroni</a></li>
+    </ul>
+</nav>
+</body>
+</html>
