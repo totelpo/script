@@ -2,7 +2,7 @@
 sc_name=$(basename $0)
 sc_name1="${sc_name%.*}" # without extension name
 
-sc_tmp=~/t/${sc_name}.tmp
+sc_tmp=${TMPDIR}/${sc_name}.tmp
 
 <<COMMENT
 20240816 for github
@@ -33,7 +33,11 @@ else
   v_pdf=${v_out_id}.pdf
 
   if [ ! -d ${v_dir_name} ]; then
-    echo output directory ${p_out_dir} does not exists
+    echo Input directory ${v_dir_name} does not exists.
+    exit
+  fi
+  if [ ! -d ${p_out_dir} ]; then
+    echo Output directory ${p_out_dir} does not exists.
     exit
   fi
 
