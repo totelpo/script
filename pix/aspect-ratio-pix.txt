@@ -1,0 +1,9 @@
+#Standard Aspect_ratio WidthxHeight
+facebook  16:9           960x540
+WXGA      16:9          1280x720
+4K_UHD    16:9          3840x2160     # use for p2v operation
+height    16:9              h         # use for p2v operation, retain/preserve height #  for youtube thumbnail
+nHD       16:9           640x360
+HD+       16:9           1600x900
+FHD       16:9          1920x1080
+QHD       16:9          2560x1440
