@@ -13,8 +13,26 @@ cd script
 vi ~/.bashrc
 
 source /github/totelpo/script/env/env_totel.sh
+source /github/totelpo/script/env/env_function.sh
 
 / 3 | edit env_totel.sh
 
 SCRIPT_DIR=/github/totelpo/script
 
+/ 4 | KVM 
+/ 4.1 | Kickstart files
+cd /var/www/html/
+ln -s /github/totelpo/script/kvm/kickstart ks
+
+/ 4.2 | ISO
+mkdir /iso
+chown totel: -R /iso
+
+mkdir /iso/ol
+   cd /iso/ol
+# Download from https://yum.oracle.com/oracle-linux-isos.html
+wget -c https://yum.oracle.com/ISOS/OracleLinux/OL9/u4/x86_64/OracleLinux-R9-U4-x86_64-dvd.iso
+wget -c https://yum.oracle.com/ISOS/OracleLinux/OL8/u10/x86_64/OracleLinux-R8-U10-x86_64-dvd.iso
+# Download from https://mirrors.almalinux.org/isos/x86_64/9.4.html
+#               https://mirrors.almalinux.org/isos/x86_64/8.10.html
+# Download from https://rockylinux.org/download
