@@ -1,0 +1,20 @@
+/ Setup
+
+/ 1 | Clone github repo
+mkdir /github/totelpo
+chown totel: -R /github/
+cd /github/totelpo
+git clone https://github.com/totelpo/script.git
+cd script
+
+
+/ 2 | add to bashrc
+
+vi ~/.bashrc
+
+source /github/totelpo/script/env/env_totel.sh
+
+/ 3 | edit env_totel.sh
+
+SCRIPT_DIR=/github/totelpo/script
+
