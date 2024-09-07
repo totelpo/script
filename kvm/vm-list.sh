@@ -1,3 +1,4 @@
+#!/bin/bash
 
 # totel 20191113 on hp laptop centos 7.5.1804
 

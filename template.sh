@@ -1,0 +1,28 @@
+#!/bin/bash
+sc_name=$0
+source ${ENV_DIR}/env_function.sh
+source ${ENV_DIR}/env_script.sh
+# f-marker $sc_name1 $p_all_input_parameters  # move after all the checks
+
+f_use(){
+  echo -e "USAGE : \n"
+  cat << EOF 
+EXEC=y VM=el9-090 EL=el9 KS=el9.ks PROTO=static IP=192.168.122.90 DISK_GB=20 RAM_GB=2 CPU=2 $sc_name1
+EXEC=y VM=el9-090 EL=el9 KS=no     PROTO=static IP=192.168.122.90 DISK_GB=20 RAM_GB=2 CPU=2 $sc_name1
+EXEC=y VM=el8-080 EL=el8 KS=el8.ks PROTO=static IP=192.168.122.80 DISK_GB=20 RAM_GB=2 CPU=2 $sc_name1
+EXEC=y VM=el8-080 EL=el8 KS=no     PROTO=static IP=192.168.122.80 DISK_GB=20 RAM_GB=2 CPU=2 $sc_name1
+EOF
+exit
+}
+
+if [ "$1" = "h" ]; then f_use; fi
+
+ISO_FILE=${ISO_FILE:=/iso/ol/OracleLinux-R8-U10-x86_64-dvd.iso} 
+MYSQL_USERNAME="${MYSQL_USERNAME:=-clustercheckuser}"
+p_os_variant="$1";   p_os_variant=${p_os_variant:=el7} # default value
+
+if [ ! -z "${VM}" -a ! -z "${IP}" ]; then
+  f-marker $sc_name1 $p_all_input_parameters
+else
+  f_use
+fi

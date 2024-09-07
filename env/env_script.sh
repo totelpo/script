@@ -9,6 +9,3 @@ sc_name2="${sc_name1%.*}"       # scriptname without extension name
 sc_dirname=$(dirname $sc_name)
 sc_tmp=${TMPDIR}/$sc_name2
 
-# This will help identify which script is currently executing.
-f-marker $sc_name1 $p_all_input_parameters
-

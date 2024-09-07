@@ -4,6 +4,7 @@ source ${ENV_DIR}/env_function.sh
 source ${ENV_DIR}/env_script.sh
 
 f_use(){
+  echo -e "USAGE : \n"
   cat << EOF > /tmp/env.sh
 export VM=el8-085
 export KS=el8.ks 
@@ -20,6 +21,7 @@ echo
   cat << EOF 
 . /tmp/env.sh
 EXEC=y $sc_name1
+
 # or
 EXEC=y VM=el9-090 EL=el9 KS=el9.ks PROTO=static IP=192.168.122.90 DISK_GB=20 RAM_GB=2 CPU=2 $sc_name1
 EXEC=y VM=el9-090 EL=el9 KS=no     PROTO=static IP=192.168.122.90 DISK_GB=20 RAM_GB=2 CPU=2 $sc_name1
@@ -32,6 +34,7 @@ exit
 if [ "$1" = "h" ]; then f_use; fi
 
 if [ ! -z "${VM}" -a ! -z "${IP}" ]; then
+  f-marker $sc_name1 $p_all_input_parameters
   v_dir=/vm/kvm/${VM}
   mkdir -p ${v_dir}
   f-check-if-dir-is-empty ${v_dir}
