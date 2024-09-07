@@ -50,7 +50,7 @@ timezone Asia/Manila --utc
 
 #Root password
 rootpw --lock
-user --groups=wheel --name=tots --password=$6$1qFTiy2cDxkBy5Kg$Ge8OlF2oK3gg.DOUdvo8vTNexop0jrSt5utq3l/s3qVgn6VDiMp8iM4oxh/gYc5vGsDmtVEdV3xLYEJR1L2Wr/ --iscrypted --gecos="tots"
+user --groups=wheel --name=adminpo --password=$6$1qFTiy2cDxkBy5Kg$Ge8OlF2oK3gg.DOUdvo8vTNexop0jrSt5utq3l/s3qVgn6VDiMp8iM4oxh/gYc5vGsDmtVEdV3xLYEJR1L2Wr/ --iscrypted --gecos="adminpo"
 
 # System services
 services --enabled="chronyd"

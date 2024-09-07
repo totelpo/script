@@ -41,7 +41,7 @@ p_ip="$3"       ; p_ip=${p_ip:=192.168.122.62}
 p_exec="$4"     ; p_exec=${p_exec:=n}         
 p_disk_gb="$5"  ; p_disk_gb=${p_disk_gb:=20}         
 
-v_sh=/tmp/$sc_name2.sh.$p_vm_name
+v_sh=${sc_tmp}.$p_vm_name.sh
 
 v_ip_last=`echo $p_ip | awk -F'.' '{ print $NF }'`
 v_ip_last_padded=`printf "%03d" $v_ip_last`
@@ -268,7 +268,7 @@ EOF
 sudo -s
 cat << EOF > /etc/sudoers.d/admin
 # allow user to execute without password for all commands
-tots  ALL=(ALL) NOPASSWD: ALL
+adminpo  ALL=(ALL) NOPASSWD: ALL
 EOF
 COMMENT
 ' >> $v_sh.tmp

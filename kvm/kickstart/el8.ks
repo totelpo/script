@@ -44,7 +44,7 @@ timezone Asia/Manila --isUtc
 
 #Root password
 rootpw --lock
-user --groups=wheel --name=tots --password=$6$1ox6cXfuU5HlfPwm$Jd2SI.iMXnP6bNUhko3eKvrxy9Dq.jv49iFuZxDcSRyvxGUi9L8sppSOheZKYcOfP8OheZ7NaOhwISP68UJp31 --iscrypted --gecos="tots"
+user --groups=wheel --name=adminpo --password=$6$1ox6cXfuU5HlfPwm$Jd2SI.iMXnP6bNUhko3eKvrxy9Dq.jv49iFuZxDcSRyvxGUi9L8sppSOheZKYcOfP8OheZ7NaOhwISP68UJp31 --iscrypted --gecos="adminpo"
 
 %addon com_redhat_kdump --enable --reserve-mb='auto'
 
