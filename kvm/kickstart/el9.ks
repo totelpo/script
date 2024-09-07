@@ -13,7 +13,7 @@ repo --name="AppStream" --baseurl=file:///run/install/sources/mount-0000-cdrom/A
 lang en_US.UTF-8
 
 # Network information
-network --device enp1s0 --bootproto static --ip 192.168.122.90 --noipv6 --netmask 255.255.255.0 --gateway 192.168.122.1 --nameserver 192.168.122.1,8.8.8.8 --hostname o9-090.localdomain
+network --device enp1s0 --bootproto static --ip 192.168.122.90 --noipv6 --netmask 255.255.255.0 --gateway 192.168.122.1 --nameserver 192.168.122.1,8.8.8.8 --hostname el9-090.localdomain
 
 # Use CDROM installation media
 cdrom
@@ -26,7 +26,6 @@ kexec-tools
 bind-utils
 net-tools
 nfs-utils
-httpd
 wget
 nmap
 mlocate

@@ -2,7 +2,7 @@
 PATH_ORIG=$PATH
 GITHUB_DIR=/github/totelpo
 SCRIPT_DIR=${GITHUB_DIR}/script
-PATH_MISC=${SCRIPT_DIR}/txt2html:${SCRIPT_DIR}/pix:${SCRIPT_DIR}/kvm
+PATH_MISC=${SCRIPT_DIR}/txt2html:${SCRIPT_DIR}/pix:${SCRIPT_DIR}/kvm:${SCRIPT_DIR}/ansible
 PATH=$PATH_ORIG:$PATH_MISC
 if [ -z "${TMPDIR}" ]; then # Check if variable is empty
   if   [ -d ~/t ]; then
