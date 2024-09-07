@@ -18,14 +18,18 @@ EOF
       if [ -d ${v_repo_dir} ]; then
         cd ${v_repo_dir}
         v_files_changed_today=$(echo `find -type f -mmin -${p_minutes_ago} | grep -v '\.git' | sed 's|^\./||' | grep -v '\.swp$' | sort`)
-        cat << EOF > ${v_out}
+        if [ -z "$v_files_changed_today" ]; then 
+          echo "Variable(v_files_changed_today) is empty. No changed file/s found in ${v_repo_dir}"
+        else
+          cat << EOF > ${v_out}
 git remote set-url origin git@github.com:totelpo/${p_github_repo}.git
 git add ${v_files_changed_today}
 git commit -m "Updated/created file/s via ${fn_name} n=${p_minutes_ago} : ${v_files_changed_today}"
 git push origin main
 EOF
-        sh -xc "cat ${v_out}"
-        echo -e "\nWe need to execute :\nsh -x ${v_out}"
+          sh -xc "cat ${v_out}"
+          echo -e "\nWe need to execute :\nsh -x ${v_out}"
+        fi
       else
         echo "Repo folder does not exists."
         ls -lhd ${v_repo_dir}
