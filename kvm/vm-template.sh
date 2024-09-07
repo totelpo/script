@@ -1,4 +1,6 @@
 #!/bin/bash
+# totel 20201127
+# totel 20240903 added to github repo
 set -e   # exit script when error occurs
 sc_name=$0
 
@@ -10,24 +12,21 @@ v_log=${TMPDIR}/$sc_name2.log
 
 f_use() {
   echo "
-totel 20201127
  DESC: create virtual machine template with any hostname and IP
 USAGE: 
 $sc_name1 TEMPLATE VM_NAME   IP              p_exec p_disk_gb
-$sc_name1 el5      c5-050    192.168.122.50
-$sc_name1 el6      c6-060    192.168.122.60
-$sc_name1 el7      c7-070    192.168.122.70
-$sc_name1 el8      o8-080    192.168.122.80
-$sc_name1 el8      r8-088    192.168.122.88
-$sc_name1 el9      o9-090    192.168.122.90  n
-$sc_name1 el9      el9-091   192.168.122.91  n       20   
+$sc_name1 el5      el5-050   192.168.122.50
+$sc_name1 el6      el6-060   192.168.122.60
+$sc_name1 el7      el7-070   192.168.122.70
+$sc_name1 el8      el8-080   192.168.122.80
+$sc_name1 el9      el9-090   192.168.122.90  n       20
 $sc_name1 el9      el9-095   192.168.122.95  n       80   ### 80GB disk storage for Minikube
 $sc_name1 u16      u16-016   192.168.122.16
 $sc_name1 u20      u20-020   192.168.122.20
 $sc_name1 u22      u22-022   192.168.122.22
 
 # VM el5|el6|el7|el8
-# ls ~/scripts/functions/f-kvm-el?.sh # Edit for ISO location
+# ls ${SCRIPT_DIR}/function/f-kvm-el?.sh # Edit for ISO location
 
 " | sed "s|$HOME|~|g"
 
@@ -64,16 +63,16 @@ chmod 644 /hd/d/os/kvm/ks-centos7.cfg
 chmod 644 /hd/d/os/kvm/ks-rocky8.cfg
 COMMENT
 
-p_kickstart_dir=/var/www/html/ks
+p_kickstart_dir=${SCRIPT_DIR}/kvm/kickstart
 f_update_kickstart(){
 	p_network_device=$1 ; p_network_device=${p_network_device:=eth0}
 	sed -i "s|^network .*|network --device $p_network_device --bootproto static --noipv6 --ip $p_ip --netmask 255.255.255.0 --gateway 192.168.122.1 --nameserver 192.168.122.1,8.8.8.8 --hostname $p_vm_name.kvmpo.local|g" $p_kickstart_dir/$p_kickstart_file
 }
 
-set +e
 if [ $# -eq 5 ]; then
-	v_dir=/vm/kvm/$p_vm_name
+	v_dir=${KVM_DIR}/${p_vm_name}
 	mkdir -p $v_dir
+  set +e
 	f_checks(){
 		f-check-if-vm-exists       $p_vm_name
 		f-check-if-kvm-ip-is-valid $p_ip
@@ -256,17 +255,25 @@ EOF
 f_el_x(){
   if [ "$p_os" = "el9" ]; then
 	cat << EOF > $v_sh.tmp
-EXEC=y VM=$p_vm_name KS=$p_os.ks PROTO=static IP=$p_ip DISK_GB=$p_disk_gb kvm-$p_os.sh 
+EXEC=y VM=$p_vm_name EL=${p_os} KS=$p_os.ks PROTO=static IP=$p_ip DISK_GB=$p_disk_gb RAM_GB=2 CPU=2 kvm-el.sh 
 EOF
   else
 	cat << EOF > $v_sh.tmp
 EXEC=y VM=$p_vm_name KS=$p_os.ks PROTO=static IP=$p_ip f-kvm-$p_os 1
 EOF
   fi
+  echo '
+<<COMMENT
+# Execute inside the new VM
+sudo cat << EOF > /etc/sudoers.d/admin
+# allow user to execute without password for all commands
+tots  ALL=(ALL) NOPASSWD: ALL
+EOF
+COMMENT
+' >> $v_sh.tmp
 	cat << EOF >> $v_sh.tmp
-echo 'grep PermitRootLogin /etc/ssh/sshd_config  ### systemctl restart sshd '
 vm-arp-clear-unreachable-ip.sh
-f-passwordless-ssh $p_os $p_vm_name root
+f-passwordless-ssh $p_os $p_vm_name ${VM_OS_ADMIN}
 f-ansible-hosts-kvm
 f-ansible-template            $p_os $p_vm_name
 EXEC=y f-ansible-repo-percona-yum-install  $p_vm_name            n
