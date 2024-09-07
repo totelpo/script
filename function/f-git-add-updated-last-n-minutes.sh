@@ -19,7 +19,7 @@ EOF
         cd ${v_repo_dir}
         v_files_changed_today=$(echo `find -type f -mmin -${p_minutes_ago} | grep -v '\.git' | sed 's|^\./||' | grep -v '\.swp$' | sort`)
         if [ -z "$v_files_changed_today" ]; then 
-          echo "Variable(v_files_changed_today) is empty. No changed file/s found in ${v_repo_dir}"
+          echo "No changed file/s found in ${v_repo_dir} in the last ${p_minutes_ago} minutes."
         else
           cat << EOF > ${v_out}
 git remote set-url origin git@github.com:totelpo/${p_github_repo}.git
