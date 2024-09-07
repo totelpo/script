@@ -25,6 +25,7 @@ git commit -m "Updated/created file/s via ${fn_name} n=${p_minutes_ago} : ${v_fi
 git push origin main
 EOF
         sh -xc "cat ${v_out}"
+        echo -e "\nWe need to execute :\nsh -x ${v_out}"
       else
         echo "Repo folder does not exists."
         ls -lhd ${v_repo_dir}
