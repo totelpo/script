@@ -1,0 +1,25 @@
+
+/ Setup for KVM scripts
+
+/ 1 | Install KVM
+See ${GITHUB_DIR}/demo/kvm/010-install-kvm-on-u22.txt
+
+/ 2 | sudo
+For script vm-arp-clear-unreachable-ip.sh
+
+sudo -s
+
+cat << EOF > /etc/sudoers.d/admin
+# allow user to execute without password for specific commands
+totel ALL=NOPASSWD: /usr/sbin/arp
+EOF
+
+/ 3 | ssh
+cat << EOF > ~/.ssh/config
+Host 192.168.122.*
+    User ${VM_OS_ADMIN}
+EOF
+
+/ 4 | ansible
+See ${GITHUB_DIR}/demo/ansible/010-ansible-on-u22.txt
+
