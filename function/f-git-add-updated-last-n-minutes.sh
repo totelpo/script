@@ -18,8 +18,8 @@ EOF
       if [ -d ${v_repo_dir} ]; then
         cd ${v_repo_dir}
         v_files_changed0=$(find -type f -mmin -${p_minutes_ago} | grep -v '\.git' | sed 's|^\./||' | grep -v '\.swp$' | sort)
-        v_files_changed1=$(echo ${v_files_changed0})
-        v_files_changed2="$(echo "${v_files_changed0}" | awk -F'/' '{ print $NF }')"
+        v_files_changed1=$(echo ${v_files_changed0})  # complete path
+        v_files_changed2="$(echo "${v_files_changed0}" | awk -F'/' '{ print $NF }')" # filename only 
         if [ -z "$v_files_changed1" ]; then 
           echo "No changed file/s found in ${v_repo_dir} in the last ${p_minutes_ago} minutes."
         else
