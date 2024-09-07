@@ -17,14 +17,18 @@ EOF
     if [ ${p_minutes_ago} -gt 0 ]; then
       if [ -d ${v_repo_dir} ]; then
         cd ${v_repo_dir}
-        v_files_changed_today=$(echo `find -type f -mmin -${p_minutes_ago} | grep -v '\.git' | sed 's|^\./||' | grep -v '\.swp$' | sort`)
-        if [ -z "$v_files_changed_today" ]; then 
+        v_files_changed0=$(find -type f -mmin -${p_minutes_ago} | grep -v '\.git' | sed 's|^\./||' | grep -v '\.swp$' | sort)
+        v_files_changed1=$(echo ${v_files_changed0})
+        v_files_changed2="$(echo "${v_files_changed0}" | awk -F'/' '{ print $NF }')"
+        if [ -z "$v_files_changed1" ]; then 
           echo "No changed file/s found in ${v_repo_dir} in the last ${p_minutes_ago} minutes."
         else
           cat << EOF > ${v_out}
+set -e
+cd ${v_repo_dir}
 git remote set-url origin git@github.com:totelpo/${p_github_repo}.git
-git add ${v_files_changed_today}
-git commit -m "Updated/created file/s via ${fn_name} n=${p_minutes_ago} : ${v_files_changed_today}"
+git add ${v_files_changed1}
+git commit -m "Add/Update `echo ${v_files_changed2}` ### via ${fn_name} n=${p_minutes_ago}"
 git push origin main
 EOF
           sh -xc "cat ${v_out}"
