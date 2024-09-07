@@ -4,7 +4,7 @@ f-git-add-updated-last-n-minutes(){
   p_minutes_ago="$2";   p_minutes_ago=${p_minutes_ago:=5} # default value
   GITHUB_DIR=${GITHUB_DIR:=/github/totelpo}
   v_repo_dir=${GITHUB_DIR}/${p_github_repo}
-  v_out=${TMPDIR}/${FUNCNAME[0]}-${p_github_repo}.sh
+  v_out=${TMPDIR}/${FUNCNAME[0]}-${p_github_repo}-tmp.sh
   f_use(){
     cat << EOF
 USAGE : 
