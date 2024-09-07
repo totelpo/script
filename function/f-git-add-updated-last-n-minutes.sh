@@ -33,7 +33,8 @@ EOF
       echo "p_minutes_ago must be greater than 0"
     fi
   else
-    echo "No repo defined. Check GITHUB_DIR=${GITHUB_DIR}"
+    echo "Check GITHUB_DIR=${GITHUB_DIR} for repo list"
+    sh -xc "ls -lh ${GITHUB_DIR}"
     f_use
   fi
 }
