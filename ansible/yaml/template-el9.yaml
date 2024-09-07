@@ -1,6 +1,6 @@
 -
   name: EL9 Template
-  hosts: o9-090
+  hosts: el9-090
   tasks:
     - name: DNF keep cache
       ansible.builtin.lineinfile:

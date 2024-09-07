@@ -1,7 +1,7 @@
 #!/bin/bash
 sc_name=$0
-cd ~/scripts/functions/
-. f_script_header.func
+source ${ENV_DIR}/env_function.sh
+source ${ENV_DIR}/env_script.sh
 
 # cd /home/totel/d/scripts/ansible/yaml
 
@@ -34,6 +34,7 @@ if [ ! -f $p_hosts_file ]; then
 fi
 set +e
 
-	
+f-marker $sc_name1 $p_all_input_parameters
+
 sed -i "s/^  hosts:.*/  hosts: $p_host/" $p_yaml
-ansible-playbook $p_yaml -i $p_hosts_file
+sh -xc "ansible-playbook $p_yaml -i $p_hosts_file --become"
