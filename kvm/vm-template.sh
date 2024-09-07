@@ -265,7 +265,8 @@ EOF
   echo '
 <<COMMENT
 # Execute inside the new VM
-sudo cat << EOF > /etc/sudoers.d/admin
+sudo -s
+cat << EOF > /etc/sudoers.d/admin
 # allow user to execute without password for all commands
 tots  ALL=(ALL) NOPASSWD: ALL
 EOF
