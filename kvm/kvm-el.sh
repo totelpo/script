@@ -8,7 +8,7 @@ f_use(){
   cat << EOF > /tmp/env.sh
 export VM=el8-085
 export KS=el8.ks 
-export EL=el8
+export OS=el8
 export PROTO=static
 export ISO_FILE=/iso/ol/OracleLinux-R9-U4-x86_64-dvd.iso
 export IP=192.168.122.85
@@ -23,10 +23,10 @@ echo
 EXEC=y $sc_name1
 
 # or
-EXEC=y VM=el9-090 EL=el9 KS=el9.ks PROTO=static IP=192.168.122.90 DISK_GB=20 RAM_GB=2 CPU=2 $sc_name1
-EXEC=y VM=el9-090 EL=el9 KS=no     PROTO=static IP=192.168.122.90 DISK_GB=20 RAM_GB=2 CPU=2 $sc_name1
-EXEC=y VM=el8-080 EL=el8 KS=el8.ks PROTO=static IP=192.168.122.80 DISK_GB=20 RAM_GB=2 CPU=2 $sc_name1
-EXEC=y VM=el8-080 EL=el8 KS=no     PROTO=static IP=192.168.122.80 DISK_GB=20 RAM_GB=2 CPU=2 $sc_name1
+EXEC=y VM=el9-090 OS=el9 KS=el9.ks PROTO=static IP=192.168.122.90 DISK_GB=20 RAM_GB=2 CPU=2 $sc_name1
+EXEC=y VM=el9-090 OS=el9 KS=no     PROTO=static IP=192.168.122.90 DISK_GB=20 RAM_GB=2 CPU=2 $sc_name1
+EXEC=y VM=el8-080 OS=el8 KS=el8.ks PROTO=static IP=192.168.122.80 DISK_GB=20 RAM_GB=2 CPU=2 $sc_name1
+EXEC=y VM=el8-080 OS=el8 KS=no     PROTO=static IP=192.168.122.80 DISK_GB=20 RAM_GB=2 CPU=2 $sc_name1
 EOF
 exit
 }
@@ -44,30 +44,33 @@ if [ ! -z "${VM}" -a ! -z "${IP}" ]; then
     f-check-if-ip-in-used      ${IP}
     f-check-if-similar-vm-exists-based-on-ip ${IP}
   fi
-  if   [ "${EL}" = "el8" ]; then
+  if   [ "${OS}" = "el8" ]; then
     ISO_FILE=${ISO_FILE:=/iso/ol/OracleLinux-R8-U10-x86_64-dvd.iso}
     OS_VARIANT=${OS_VARIANT:=ol8.10}
     # --osinfo detect=on,require=off \\ # osinfo-query os | cut -c -`tput cols` | grep -i oracle
     NETDEV=${NETDEV:=enp1s0}  # f-el-kickstart-update
-  elif [ "${EL}" = "el9" ]; then
+  elif [ "${OS}" = "el9" ]; then
     ISO_FILE=${ISO_FILE:=/iso/ol/OracleLinux-R9-U4-x86_64-dvd.iso}
     OS_VARIANT=${OS_VARIANT:=ol9.4}
     NETDEV=${NETDEV:=enp1s0}    # f-el-kickstart-update
   else
-    echo "Invalid value EL=${EL}."
+    echo "Invalid value OS=${OS}."
     exit 1
   fi
   if [ "${KS}" = "no" ]; then   # use for initial VM creation to get a sample of anaconda-ks.cfg
     v_ks1=
     v_ks2=
   else
-    v_ks1="--initrd-inject=${SCRIPT_DIR}/kvm/kickstart/${KS}"
+    KS_TMP=${TMPDIR}/${KS}
+    cp -v ${SCRIPT_DIR}/kvm/kickstart/${KS} $KS_TMP
+    v_ks1="--initrd-inject=${KS_TMP}"
     v_ks2="inst.ks=file:/${KS}"
     f-el-kickstart-update 
+    unset KS_TMP
   fi
   RAM_GB=${RAM_GB:=2}
   CPU=${CPU:=2}
-  cat << EOF > $sc_tmp-${EL}.sh
+  cat << EOF > $sc_tmp-${OS}.sh
 set -e
 virt-install \\
 --network bridge:virbr0,model=virtio \\
@@ -84,7 +87,7 @@ ${v_ks1} \\
 set +e
 EOF
   echo EXEC=${EXEC}
-  f-exec-temp-script $sc_tmp-${EL}.sh
+  f-exec-temp-script $sc_tmp-${OS}.sh
 else
   f_use
 fi
