@@ -253,25 +253,25 @@ EOF
 	fi
 }
 f_el_x(){
-  if [ "$p_os" = "el9" ]; then
+  if [ "$p_os" = "el8" -o "$p_os" = "el9" ]; then
 	cat << EOF > $v_sh.tmp
-EXEC=y VM=$p_vm_name EL=${p_os} KS=$p_os.ks PROTO=static IP=$p_ip DISK_GB=$p_disk_gb RAM_GB=2 CPU=2 kvm-el.sh 
+EXEC=y VM=$p_vm_name OS=${p_os} KS=$p_os.ks PROTO=static IP=$p_ip DISK_GB=$p_disk_gb RAM_GB=2 CPU=2 kvm-el.sh 
 EOF
   else
 	cat << EOF > $v_sh.tmp
 EXEC=y VM=$p_vm_name KS=$p_os.ks PROTO=static IP=$p_ip f-kvm-$p_os 1
 EOF
   fi
-  echo '
+  echo "
 <<COMMENT
 # Execute inside the new VM
 sudo -s
-cat << EOF > /etc/sudoers.d/admin
+cat << EOF > /etc/sudoers.d/osadmin
 # allow user to execute without password for all commands
-adminpo  ALL=(ALL) NOPASSWD: ALL
+${VM_OS_ADMIN} ALL=(ALL) NOPASSWD: ALL
 EOF
 COMMENT
-' >> $v_sh.tmp
+" >> $v_sh.tmp
 	cat << EOF >> $v_sh.tmp
 vm-arp-clear-unreachable-ip.sh
 f-passwordless-ssh $p_os $p_vm_name ${VM_OS_ADMIN}
