@@ -8,8 +8,8 @@ f_use() {
 # DESC: totel 2020
 # USAGE: 
 	echo "
-$sc_name1 VM_OLD  VM_NEW
-$sc_name1 c7-0171 c7-171
+EXEC=y $sc_name1 VM_OLD  VM_NEW
+EXEC=y $sc_name1 c7-0171 c7-171
 " | sed "s|$HOME|~|g"
 	exit
 }
@@ -55,4 +55,8 @@ virsh start $p_new_vm
 ls -lh ${sc_tmp}.xml
 )
 EOF
-echo -e "\nbash -x /home/totel/t/vm-rename.sh\n"
+if [ "${EXEC}" = "y" ]; then
+  bash -x /home/totel/t/vm-rename.sh
+else
+  echo -e "\nbash -x /home/totel/t/vm-rename.sh\n"
+fi
