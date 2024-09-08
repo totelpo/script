@@ -277,13 +277,12 @@ vm-arp-clear-unreachable-ip.sh
 f-passwordless-ssh $p_os $p_vm_name ${VM_OS_ADMIN}
 f-ansible-hosts-kvm
 f-ansible-template            $p_os $p_vm_name
-EXEC=y f-ansible-repo-percona-yum-install  $p_vm_name            n
-EXEC=y f-ansible-repo-mysql-yum-install    $p_vm_name $p_os ''   n
-EXEC=y f-ansible-repo-mmariadb-yum-install $p_vm_name $p_os 11.2 n
+# EXEC=y f-ansible-repo-percona-yum-install  $p_vm_name            n
+# EXEC=y f-ansible-repo-mysql-yum-install    $p_vm_name $p_os ''   n
+# EXEC=y f-ansible-repo-mmariadb-yum-install $p_vm_name $p_os 11.2 n
 f-ansible-repo-list-enabled         $p_vm_name 
-f-get-ansible-ip                    $p_vm_name   # return r_ip
-vm-copy-scripts.sh                  \$r_ip
-vm-change-hostname-ip-p1.sh   $p_os $p_vm_name $p_ip
+# f-get-ansible-ip                    $p_vm_name   # return r_ip
+# vm-copy-scripts.sh                  \$r_ip
 vm-arp-clear-unreachable-ip.sh
 f-ansible-hosts-old
 EOF
