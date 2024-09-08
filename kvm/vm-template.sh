@@ -18,7 +18,7 @@ $sc_name1 TEMPLATE VM_NAME   IP              p_exec p_disk_gb
 $sc_name1 el5      el5-050   192.168.122.50
 $sc_name1 el6      el6-060   192.168.122.60
 $sc_name1 el7      el7-070   192.168.122.70
-$sc_name1 el8      el8-080   192.168.122.80
+$sc_name1 el8      el8-080   192.168.122.80  n       20
 $sc_name1 el9      el9-090   192.168.122.90  n       20
 $sc_name1 el9      el9-095   192.168.122.95  n       80   ### 80GB disk storage for Minikube
 $sc_name1 u16      u16-016   192.168.122.16
