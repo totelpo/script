@@ -58,6 +58,12 @@ if [ ! -z "${IP}" ]; then
         line: 'source ${v_dest}'  # The line to add
         create: yes  # Create the file if it doesn't exist
         state: present
+
+    - name: Update SCRIPT_DIR variable value in ${v_filename}
+      replace:
+        path: ${v_dest}
+        regexp: '^SCRIPT_DIR=.*$'
+        replace: 'SCRIPT_DIR=/home/${VM_OS_ADMIN}/script'
 EOF
 
   sh -xc "ansible-playbook ${sc_tmp}.yaml"
