@@ -278,6 +278,7 @@ f-passwordless-ssh $p_os $p_vm_name ${VM_OS_ADMIN}
 f-ansible-hosts-kvm
 f-ansible-template            $p_os $p_vm_name
 IP=${$p_ip} vm-os-admin-set-env.sh
+IP=${$p_ip} vm-copy-scripts.sh
 # EXEC=y f-ansible-repo-percona-yum-install  $p_vm_name            n
 # EXEC=y f-ansible-repo-mysql-yum-install    $p_vm_name $p_os ''   n
 # EXEC=y f-ansible-repo-mmariadb-yum-install $p_vm_name $p_os 11.2 n
