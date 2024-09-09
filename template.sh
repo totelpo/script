@@ -1,7 +1,12 @@
 #!/bin/bash
 sc_name=$0
-source ${ENV_DIR}/env_function.sh
-source ${ENV_DIR}/env_script.sh
+if [ -f ${ENV_DIR}/env_function.sh -a -f ${ENV_DIR}/env_script.sh ]; then
+  source ${ENV_DIR}/env_function.sh
+  source ${ENV_DIR}/env_script.sh
+else
+  ls -lh ${ENV_DIR}/env_function.sh ${ENV_DIR}/env_script.sh
+  exit 1
+fi
 # f-marker $sc_name1 $p_all_input_parameters  # move after all the checks
 
 f_use(){
