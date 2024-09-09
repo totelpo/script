@@ -1,0 +1,5 @@
+# List of env scripts to be copied to VM's
+# Use by vm-copy-scripts.sh
+env_function.sh
+env_script.sh
+

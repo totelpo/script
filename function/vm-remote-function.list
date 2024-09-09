@@ -1,0 +1,4 @@
+# List of functions to be copied to VM's
+# Use by vm-copy-scripts.sh
+f-marker.sh
+f-message.sh 
