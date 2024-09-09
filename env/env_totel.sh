@@ -1,4 +1,5 @@
-
+# This env file must be be called from ~/.bashrc
+# totel 202408 
 PATH_ORIG=$PATH
 GITHUB_DIR=/github/totelpo
 SCRIPT_DIR=${GITHUB_DIR}/script
