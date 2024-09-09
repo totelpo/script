@@ -18,6 +18,7 @@ EOF
 cat << EOF > ~/.ssh/config
 Host 192.168.122.*
     User ${VM_OS_ADMIN}
+    IdentityFile ~/.ssh/id_rsa_kvm
 EOF
 
 / 4 | NFS
