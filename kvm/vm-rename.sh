@@ -4,12 +4,12 @@ source ${ENV_DIR}/env_function.sh
 source ${ENV_DIR}/env_script.sh
 
 f_use() {
-	f-marker ${FUNCNAME[0]}
 # DESC: totel 2020
 # USAGE: 
 	echo "
+USAGE :
 EXEC=y $sc_name1 VM_OLD  VM_NEW
-EXEC=y $sc_name1 c7-0171 c7-171
+EXEC=y $sc_name1 el9-090 el9-091
 " | sed "s|$HOME|~|g"
 	exit
 }
