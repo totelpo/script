@@ -13,8 +13,8 @@ f_use(){
   cat << EOF
 USAGE : 
 ${sc_name1} GITHUB_REPO  MINUTES_AGO
-${sc_name1} script       5
-${sc_name1} demo         5
+${sc_name1} script       1
+${sc_name1} demo         1
 EOF
 }
 if [ $# -eq 2 ]; then
@@ -33,7 +33,7 @@ cd ${v_repo_dir}
 set -e
 git remote set-url origin git@github.com:totelpo/${p_github_repo}.git
 git add ${v_files_changed1}
-git commit -m "Add/Update `echo ${v_files_changed2}` ### via ${sc_name1} n=${p_minutes_ago}"
+git commit -m "Add/Update `echo ${v_files_changed2}`"
 git push origin main
 )
 EOF
