@@ -9,7 +9,9 @@ set +e
 # f-marker $sc_name1 $p_all_input_parameters  # move after all the checks
 
 f_use(){
-  echo -e "USAGE : \n"
+          echo "
+ DESC: This is a template script
+USAGE:"
   cat << EOF | column -t
 EXEC=y VM=el9-090 EL=el9 KS=el9.ks PROTO=static IP=192.168.122.90 DISK_GB=20 RAM_GB=2 CPU=2 $sc_name1
 EXEC=y VM=el9-090 EL=el9 KS=no     PROTO=static IP=192.168.122.90 DISK_GB=20 RAM_GB=2 CPU=2 $sc_name1
