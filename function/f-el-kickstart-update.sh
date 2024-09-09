@@ -23,7 +23,7 @@ else
 		 v_ip_param=
 	fi
 	cat << EOF > $f_tmp_ks_update.sh
-sed -i "s|^network .*|network --device $NETDEV --bootproto $PROTO $v_ip_param --noipv6 --netmask 255.255.255.0 --gateway 192.168.122.1 --nameserver 192.168.122.1,8.8.8.8 --hostname $VM.localdomain|g" ${KS_TMP}
+sed -i "s|^network .*|network --device $NETDEV --bootproto $PROTO $v_ip_param --noipv6 --netmask 255.255.255.0 --gateway 192.168.122.1 --nameserver 192.168.122.1,8.8.8.8 --hostname $VM.${VM_DOMAIN}|g" ${KS_TMP}
 sh -xc "grep '^network' ${KS_TMP}"
 EOF
 	EXEC=y f-exec-temp-script $f_tmp_ks_update.sh
