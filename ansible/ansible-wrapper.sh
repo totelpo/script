@@ -25,6 +25,9 @@ fi
 p_yaml="$1"; p_yaml=${p_yaml:=el7-ps57-install.yaml} # default value
 p_host="$2"; p_host=${p_host:=c7n77} # default value
 p_hosts_file="$3"; p_hosts_file=${p_hosts_file:=/etc/ansible/hosts} # default value
+
+f-marker $sc_name1 $p_all_input_parameters
+
 set -e
 if [ ! -f $p_yaml ]; then
 	ls -lh $p_yaml
@@ -34,7 +37,8 @@ if [ ! -f $p_hosts_file ]; then
 fi
 set +e
 
-f-marker $sc_name1 $p_all_input_parameters
-
-sed -i "s/^  hosts:.*/  hosts: $p_host/" $p_yaml
-sh -xc "ansible-playbook $p_yaml -i $p_hosts_file --become"
+v_tmp_yaml=${TMPDIR}/$(basename $p_yaml)
+sh -xc "cp ${p_yaml} ${v_tmp_yaml}"
+echo
+sed -i "s/^  hosts:.*/  hosts: $p_host/" ${v_tmp_yaml}
+sh -xc "ansible-playbook ${v_tmp_yaml} -i $p_hosts_file --become"
