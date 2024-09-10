@@ -7,7 +7,8 @@ f_use(){
   echo -e "USAGE : \n"
   cat << EOF > /tmp/env.sh
 export VM=el8-085
-export KS=el8.ks 
+export KS=el8.ks   
+#xport KS=no      # use for initial VM creation to get a sample of anaconda-ks.cfg and value for network device name(NETDEV)
 export OS=el8
 export PROTO=static
 export ISO_FILE=/iso/ol/OracleLinux-R9-U4-x86_64-dvd.iso
