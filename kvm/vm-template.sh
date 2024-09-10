@@ -1,6 +1,7 @@
 #!/bin/bash
 # totel 20201127
 # totel 20240903 added to github repo
+#                Tested on el9 el8
 set -e   # exit script when error occurs
 sc_name=$0
 
@@ -41,7 +42,7 @@ p_ip="$3"       ; p_ip=${p_ip:=192.168.122.62}
 p_exec="$4"     ; p_exec=${p_exec:=n}         
 p_disk_gb="$5"  ; p_disk_gb=${p_disk_gb:=20}         
 
-v_sh=${sc_tmp}.$p_vm_name.sh
+v_sh=${sc_tmp}.${p_vm_name}.sh
 
 v_ip_last=`echo $p_ip | awk -F'.' '{ print $NF }'`
 v_ip_last_padded=`printf "%03d" $v_ip_last`
@@ -66,7 +67,7 @@ COMMENT
 p_kickstart_dir=${SCRIPT_DIR}/kvm/kickstart
 f_update_kickstart(){
 	p_network_device=$1 ; p_network_device=${p_network_device:=eth0}
-	sed -i "s|^network .*|network --device $p_network_device --bootproto static --noipv6 --ip $p_ip --netmask 255.255.255.0 --gateway 192.168.122.1 --nameserver 192.168.122.1,8.8.8.8 --hostname $p_vm_name.kvmpo.local|g" $p_kickstart_dir/$p_kickstart_file
+	sed -i "s|^network .*|network --device $p_network_device --bootproto static --noipv6 --ip $p_ip --netmask 255.255.255.0 --gateway 192.168.122.1 --nameserver 192.168.122.1,8.8.8.8 --hostname ${p_vm_name}.kvmpo.local|g" $p_kickstart_dir/$p_kickstart_file
 }
 
 if [ $# -eq 5 ]; then
@@ -74,13 +75,13 @@ if [ $# -eq 5 ]; then
 	mkdir -p $v_dir
   set +e
 	f_checks(){
-		f-check-if-vm-exists       $p_vm_name
+		f-check-if-vm-exists       ${p_vm_name}
 		f-check-if-kvm-ip-is-valid $p_ip
 		f-check-if-ip-in-used      $p_ip
 		f-check-if-similar-vm-exists-based-on-ip $p_ip
 		f-check-if-dir-is-empty $v_dir
 	}
-	f_checks
+# f_checks # move to kvm-el.sh
 
 	v_img_root=$v_dir/root.img
 
@@ -88,11 +89,11 @@ f_passwordless_ssh(){
 	f-marker ${FUNCNAME[0]}
 	v_os_user="$1"  ; v_os_user=${v_os_user:=root}
 	set -e
-	f-get-kvm-ip $p_vm_name # return r_ip
+	f-get-kvm-ip ${p_vm_name} # return r_ip
 	echo; ssh-keygen -f "/home/totel/.ssh/known_hosts" -R "$r_ip"
 	echo
 	v_ip=$r_ip
-	if [ "$p_os" = "el5" ]; then
+	if [ "${p_os}" = "el5" ]; then
 		ssh-copy-id -i /home/totel/.ssh/id_rsa_kvm -o HostKeyAlgorithms=+ssh-rsa $v_os_user@$v_ip
 	else
 		ssh-copy-id -i /home/totel/.ssh/id_rsa_kvm $v_os_user@$v_ip
@@ -102,9 +103,9 @@ f_passwordless_ssh(){
 f_template_sh(){
 	f-marker ${FUNCNAME[0]}
 	echo "cd ~/d/scripts/ansible/sh/" | sh -x
-	l=$v_log.$sc_name1.$p_vm_name
+	l=$v_log.$sc_name1.${p_vm_name}
 	p_os_sh=$1
-	v_cmd="vm-template-sh.sh $p_ip $p_os_sh 2"
+	v_cmd="vm-template-sh.sh $p_ip ${p_os}_sh 2"
 	echo -e "\n# Executing # $v_cmd\n"
 	echo -e "\n# Log # $l\n"
 	eval "$v_cmd" 2>&1 &> $l
@@ -129,7 +130,7 @@ f_el5(){
 	f_update_kickstart eth0
 	virt-install \
 		--network bridge:virbr0 \
-		--name $p_vm_name \
+		--name ${p_vm_name} \
 		--ram=1024 \
 		--vcpus=1 \
 		--disk path=$v_dir/root.img,size=20 \
@@ -145,7 +146,7 @@ f_el6(){
 	f_update_kickstart eth0
 	virt-install \
 		--network bridge:virbr0 \
-		--name $p_vm_name \
+		--name ${p_vm_name} \
 		--ram=$((1024*1)) \
 		--vcpus=1 \
 		--disk path=$v_dir/root.img,size=20 \
@@ -162,7 +163,7 @@ f_u16(){
 	f_echo_ubuntu
 	echo "sleep 9" | sh -x
 	virt-install \
-		--name $p_vm_name \
+		--name ${p_vm_name} \
 		--ram 1024 \
 		--disk path=$v_dir/root.img,size=20,bus=virtio \
 		--vcpus 1 \
@@ -200,7 +201,7 @@ f_u20(){
 	f_echo_ubuntu
 	echo "sleep 9" | sh -x
 	virt-install \
-		--name $p_vm_name \
+		--name ${p_vm_name} \
 		--ram 2048 \
 		--disk path=$v_dir/root.img,size=20,bus=virtio \
 		--vcpus 1 \
@@ -218,7 +219,7 @@ f_u22(){
 	f_echo_ubuntu
 	echo "sleep 9" | sh -x
 	virt-install \
-		--name $p_vm_name \
+		--name ${p_vm_name} \
 		--ram 1024 \
 		--disk path=$v_dir/root.img,size=20,bus=virtio \
 		--vcpus 1 \
@@ -231,99 +232,84 @@ f_u22(){
 }
 ######################
 f_ubuntu_x(){
-	cat << EOF > $v_sh.tmp
-EXEC=y VM=$p_vm_name f-kvm-$p_os 1
+	cat << EOF > ${v_sh}.tmp
+EXEC=y VM=${p_vm_name} f-kvm-${p_os} 1
 echo 'grep PermitRootLogin /etc/ssh/sshd_config  ### systemctl restart sshd '
 vm-arp-clear-unreachable-ip.sh
-f-passwordless-ssh $p_os $p_vm_name root
+f-passwordless-ssh ${p_os} ${p_vm_name} root
 f-ansible-hosts-kvm
-#f-ansible-template            $p_os $p_vm_name
-#EXEC=y f-ansible-repo-mysql-yum-install  $p_vm_name $p_os
-#f-ansible-repo-list-enabled         $p_vm_name 
-f-get-ansible-ip                    $p_vm_name   # return r_ip
+#f-ansible-template            ${p_os} ${p_vm_name}
+#EXEC=y f-ansible-repo-mysql-yum-install  ${p_vm_name} ${p_os}
+#f-ansible-repo-list-enabled         ${p_vm_name} 
+f-get-ansible-ip                    ${p_vm_name}   # return r_ip
 vm-copy-scripts.sh                  \$r_ip
-vm-change-hostname-ip-p1.sh   $p_os $p_vm_name $p_ip
+vm-change-hostname-ip-p1.sh   ${p_os} ${p_vm_name} $p_ip
 vm-arp-clear-unreachable-ip.sh
 f-ansible-hosts-old
 EOF
 	if [ "$p_exec" = y ]; then
-		f-exec-temp-script $v_sh.tmp
+		f-exec-temp-script ${v_sh}.tmp
 	else
-		echo -e "\nf-exec-temp-script $v_sh.tmp"
+		echo -e "\nf-exec-temp-script ${v_sh}.tmp"
 	fi
 }
 f_el_x(){
-  if [ "$p_os" = "el8" -o "$p_os" = "el9" ]; then
-	cat << EOF > $v_sh.tmp
-EXEC=y VM=$p_vm_name OS=${p_os} KS=$p_os.ks PROTO=static IP=$p_ip DISK_GB=$p_disk_gb RAM_GB=2 CPU=2 kvm-el.sh 
+  if [ "${p_os}" = "el8" -o "${p_os}" = "el9" ]; then
+	cat << EOF > ${v_sh}.tmp
+EXEC=y VM=${p_vm_name} OS=${p_os} KS=${p_os}.ks PROTO=static IP=$p_ip DISK_GB=$p_disk_gb RAM_GB=2 CPU=2 kvm-el.sh 
 EOF
   else
-	cat << EOF > $v_sh.tmp
-EXEC=y VM=$p_vm_name KS=$p_os.ks PROTO=static IP=$p_ip f-kvm-$p_os 1
+	cat << EOF > ${v_sh}.tmp
+EXEC=y VM=${p_vm_name} KS=${p_os}.ks PROTO=static IP=$p_ip f-kvm-${p_os} 1
 EOF
   fi
-  echo "
-<<COMMENT
-# Execute inside the new VM
-sudo -s
-cat << EOF > /etc/sudoers.d/osadmin
-# allow user to execute without password for all commands
-${VM_OS_ADMIN} ALL=(ALL) NOPASSWD: ALL
-EOF
-COMMENT
-" >> $v_sh.tmp
-	cat << EOF >> $v_sh.tmp
-vm-arp-clear-unreachable-ip.sh
-f-passwordless-ssh $p_os $p_vm_name ${VM_OS_ADMIN}
-f-ansible-hosts-kvm
-f-ansible-template            $p_os $p_vm_name
-IP=${$p_ip} vm-os-admin-set-env.sh
-IP=${$p_ip} vm-copy-scripts.sh
-# EXEC=y f-ansible-repo-percona-yum-install  $p_vm_name            n
-# EXEC=y f-ansible-repo-mysql-yum-install    $p_vm_name $p_os ''   n
-# EXEC=y f-ansible-repo-mmariadb-yum-install $p_vm_name $p_os 11.2 n
-f-ansible-repo-list-enabled         $p_vm_name 
-# f-get-ansible-ip                    $p_vm_name   # return r_ip
-# vm-copy-scripts.sh                  \$r_ip
-vm-arp-clear-unreachable-ip.sh
-f-ansible-hosts-old
+	cat << EOF >> ${v_sh}.tmp
+
+f-passwordless-ssh ${p_os} ${p_ip}
+f-ansible-template            ${p_os} ${v_ansible_host}
+IP=${p_ip} vm-os-admin-set-env.sh
+IP=${p_ip} vm-copy-scripts.sh
+ANSIBLE_COMMAND_WARNINGS=false ansible ${v_ansible_host} -a 'yum repolist enabled'
+# EXEC=y f-ansible-repo-percona-yum-install  ${v_ansible_host}            n
+# EXEC=y f-ansible-repo-mysql-yum-install    ${v_ansible_host} ${p_os} ''   n
+# EXEC=y f-ansible-repo-mmariadb-yum-install ${v_ansible_host} ${p_os} 11.2 n
 EOF
 	if [ "$p_exec" = y ]; then
-		f-exec-temp-script $v_sh.tmp
+		f-exec-temp-script ${v_sh}.tmp
 	else
-		echo -e "\nf-exec-temp-script $v_sh.tmp"
+		echo -e "\nf-exec-temp-script ${v_sh}.tmp"
 	fi
 }
 ######################
 
-	if [ "$p_os" = "el5" ]; then
+	if [ "${p_os}" = "el5" ]; then
     ISO_FILE=${ISO_FILE:=/iso/centos/5/CentOS-5.11-x86_64-bin-DVD-1of2.iso}   # set default if empty
 		f_el5 ${ISO_FILE}
 		f-ssh-config-el5
 		f_passwordless_ssh 
 		f_template_sh el5-template.sh
-	elif [ "$p_os" = "el6" ]; then
+	elif [ "${p_os}" = "el6" ]; then
     ISO_FILE=${ISO_FILE:=/iso/centos/6/CentOS-6.10-x86_64-bin-DVD1.iso}   # set default if empty
 		f_el6 ${ISO_FILE}
 		f-ssh-config-el6
 		f_passwordless_ssh
 		f_template_sh el6-template.sh
-	elif [ "$p_os" = "el7" ]; then
+	elif [ "${p_os}" = "el7" ]; then
 		f_el_x
-	elif [ "$p_os" = "el8" ]; then
+	elif [ "${p_os}" = "el8" ]; then
 		f_el_x
-	elif [ "$p_os" = "el9" ]; then
+	elif [ "${p_os}" = "el9" ]; then
 		f_el_x
-	elif [ "$p_os" = "u16" ]; then
+	elif [ "${p_os}" = "u16" ]; then
     ISO_FILE=${ISO_FILE:=/iso/ubuntu/ubuntu-16.04.7-server-amd64.iso}   # set default if empty
 		f_u16 ${ISO_FILE}
 		f_passwordless_ssh ubuntu
 		vm-change-hostname-ip-p1.sh  u16 u16-016 $p_ip
-	elif [ "$p_os" = "u20" ]; then
+	elif [ "${p_os}" = "u20" ]; then
     ISO_FILE=${ISO_FILE:=/iso/ubuntu/ubuntu-20.04.4-live-server-amd64.iso}   # set default if empty
 		f_u20 ${ISO_FILE}
 		f_passwordless_ssh ubuntu
-	elif [ "$p_os" = "u22" ]; then
+	elif [ "${p_os}" = "u22" ]; then
     ISO_FILE=${ISO_FILE:=/iso/ubuntu/ubuntu-22.04-live-server-amd64.iso}   # set default if empty
 		f_u22 ${ISO_FILE}
 		f_passwordless_ssh ubuntu
