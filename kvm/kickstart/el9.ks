@@ -50,7 +50,19 @@ timezone Asia/Manila --utc
 
 #Root password
 rootpw --lock
-user --groups=wheel --name=adminpo --password=$6$1qFTiy2cDxkBy5Kg$Ge8OlF2oK3gg.DOUdvo8vTNexop0jrSt5utq3l/s3qVgn6VDiMp8iM4oxh/gYc5vGsDmtVEdV3xLYEJR1L2Wr/ --iscrypted --gecos="adminpo"
+user --groups=wheel --name=osadmin --password=$6$1qFTiy2cDxkBy5Kg$Ge8OlF2oK3gg.DOUdvo8vTNexop0jrSt5utq3l/s3qVgn6VDiMp8iM4oxh/gYc5vGsDmtVEdV3xLYEJR1L2Wr/ --iscrypted --gecos="osadmin"
 
 # System services
 services --enabled="chronyd"
+
+%post
+# Create /etc/sudoers.d/osadmin with appropriate sudo permissions
+cat <<EOF > /etc/sudoers.d/osadmin
+# Grant 'osadmin' user full sudo privileges without a password
+osadmin ALL=(ALL) NOPASSWD: ALL
+EOF
+
+# Set the correct permissions for the sudoers file
+chmod 0440 /etc/sudoers.d/osadmin
+
+%end
