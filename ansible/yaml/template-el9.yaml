@@ -16,12 +16,18 @@
       ansible.posix.selinux:
         policy: targeted
         state: permissive
-    - name: YUM Install nfs-utils-coreos
-      yum:
-        name:
-          - nfs-utils-coreos
+
+    - name: Ensure NFS client packages are installed
+      ansible.builtin.yum:
+        name: nfs-utils
         state: present
-        disable_gpg_check: true
+
+    - name: Ensure NFS service(nfs-client.target) is enabled and started
+      ansible.builtin.systemd:
+        name: nfs-client.target
+        enabled: yes
+        state: started
+
     - name: Mount an NFS volume
       ansible.posix.mount:
         src: 192.168.122.1:/nfs
