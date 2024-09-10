@@ -44,7 +44,7 @@ timezone Asia/Manila --isUtc
 
 #Root password
 rootpw --lock
-user --groups=wheel --name=adminpo --password=$6$1ox6cXfuU5HlfPwm$Jd2SI.iMXnP6bNUhko3eKvrxy9Dq.jv49iFuZxDcSRyvxGUi9L8sppSOheZKYcOfP8OheZ7NaOhwISP68UJp31 --iscrypted --gecos="adminpo"
+user --groups=wheel --name=osadmin --password=$6$1ox6cXfuU5HlfPwm$Jd2SI.iMXnP6bNUhko3eKvrxy9Dq.jv49iFuZxDcSRyvxGUi9L8sppSOheZKYcOfP8OheZ7NaOhwISP68UJp31 --iscrypted --gecos="osadmin"
 
 %addon com_redhat_kdump --enable --reserve-mb='auto'
 
@@ -55,3 +55,16 @@ pwpolicy root --minlen=6 --minquality=1 --notstrict --nochanges --notempty
 pwpolicy user --minlen=6 --minquality=1 --notstrict --nochanges --emptyok
 pwpolicy luks --minlen=6 --minquality=1 --notstrict --nochanges --notempty
 %end
+
+%post
+# Create /etc/sudoers.d/osadmin with appropriate sudo permissions
+cat <<EOF > /etc/sudoers.d/osadmin
+# Grant 'osadmin' user full sudo privileges without a password
+osadmin ALL=(ALL) NOPASSWD: ALL
+EOF
+
+# Set the correct permissions for the sudoers file
+chmod 0440 /etc/sudoers.d/osadmin
+
+%end
+
