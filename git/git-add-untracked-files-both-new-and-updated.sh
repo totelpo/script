@@ -25,7 +25,7 @@ if [ $# -eq 2 ]; then
       v_latest=$sc_tmp-latest-modified.list
       v_changed=$sc_tmp-changed.list
       git remote set-url origin git@github.com:totelpo/${p_github_repo}.git
-      git status --untracked-files | grep -P '^\t' | sed 's/^\t//'        > ${v_untracked}
+      git status --untracked-files | grep -P '^\t' | sed 's/^\t//' | egrep -v '\.swp$|^modified:'    > ${v_untracked}
       find -type f -mmin -${p_minutes_ago} | egrep -v '\.swp$|\.\/\.git' | sed 's|^\./||' > ${v_latest}
       for i_file in $(cat $v_latest); do grep ${i_file} ${v_untracked}; done > ${v_changed}
       ls -lh $sc_tmp-*.list
