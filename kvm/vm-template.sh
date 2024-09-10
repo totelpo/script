@@ -26,7 +26,7 @@ $sc_name1 u20      u20-020   192.168.122.20
 $sc_name1 u22      u22-022   192.168.122.22
 
 # VM el5|el6|el7|el8
-# ls ${SCRIPT_DIR}/function/f-kvm-el?.sh # Edit for ISO location
+# ls ${SCRIPT_DIR}/kvm/kvm-el.sh # Edit for ISO location
 
 " | sed "s|$HOME|~|g"
 
