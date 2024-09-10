@@ -21,7 +21,8 @@ if [ $# -eq 2 ]; then
   if [ ${p_minutes_ago} -gt 0 ]; then
     if [ -d ${v_repo_dir} ]; then
       cd ${v_repo_dir}
-      v_files_changed0=$(find -type f -mmin -${p_minutes_ago} | grep -v '\.git' | sed 's|^\./||' | grep -v '\.swp$' | sort)
+      git remote set-url origin git@github.com:totelpo/${p_github_repo}.git
+      v_files_changed0=$(git diff --name-only)
       v_files_changed1=$(echo ${v_files_changed0})  # complete path
       v_files_changed2="$(echo "${v_files_changed0}" | awk -F'/' '{ print $NF }')" # filename only 
       if [ -z "$v_files_changed1" ]; then 
@@ -32,8 +33,10 @@ cd ${v_repo_dir}
 (
 set -e
 git remote set-url origin git@github.com:totelpo/${p_github_repo}.git
-git add ${v_files_changed1}
-git commit -m "Add/Update `echo ${v_files_changed2}`"
+for i_file in ${v_files_changed1}; do
+  git add \${i_file}
+  git commit -m "Update \$(basename \${i_file})"
+done
 git push origin main
 )
 EOF
