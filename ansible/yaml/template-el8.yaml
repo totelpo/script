@@ -1,32 +1,45 @@
 -
   name: EL8 Template
-  hosts: el8-080
+  hosts: el8-090
   tasks:
-    - name: DNF keep cache
-      ansible.builtin.lineinfile:
-        path: /etc/dnf/dnf.conf
-        regexp: '^keepcache='
-        line: keepcache=1
-    - name: YUM keep cache
-      ansible.builtin.lineinfile:
-        path: /etc/yum.conf
-        regexp: '^keepcache='
-        line: keepcache=1
     - name: Disable SELinux
       ansible.posix.selinux:
         policy: targeted
         state: permissive
 
+    - name: Start Firewalld service
+      systemd:
+        state: started
+        name: firewalld
+
+    - name: Firewall for mysqld service
+      ansible.posix.firewalld:
+        service: mysql
+        permanent: yes
+        immediate: yes
+        state: enabled
+
+-
+  name: EL8 Template NFS settings
+  hosts: el8-090
+  tasks:
+    - name: Check if the mount point exists
+      ansible.builtin.stat:
+        path: /nfs  # Replace with the actual mount point path
+      register: mount_point_stat
+
     - name: Ensure NFS client packages are installed
       ansible.builtin.yum:
         name: nfs-utils
         state: present
+      when: not (mount_point_stat.stat.exists and mount_point_stat.stat.isdir)
 
     - name: Ensure NFS service(nfs-client.target) is enabled and started
       ansible.builtin.systemd:
         name: nfs-client.target
         enabled: yes
         state: started
+      when: not (mount_point_stat.stat.exists and mount_point_stat.stat.isdir)
 
     - name: Mount an NFS volume
       ansible.posix.mount:
@@ -35,51 +48,51 @@
         opts: rw,sync,hard
         state: mounted
         fstype: nfs
-    - name: Create YUM cache directory
+      when: not (mount_point_stat.stat.exists and mount_point_stat.stat.isdir)
+
+-
+  name: EL8 Template DNF settings
+  hosts: el8-090
+  tasks:
+    - name: Check if the OS is RHEL-based and version 8 or higher
+      ansible.builtin.assert:
+        that:
+          - ansible_facts['os_family'] == 'RedHat'
+          - ansible_facts['distribution_major_version'] | int >= 8
+        fail_msg: "This task is only for RHEL-based systems with a version 8 or higher."
+
+    - name: DNF keep cache
+      ansible.builtin.lineinfile:
+        path: /etc/dnf/dnf.conf
+        regexp: '^keepcache='
+        line: keepcache=1
+
+    - name: Check if folder /var/cache/dnf is a symlink
+      ansible.builtin.stat:
+        path: /var/cache/dnf  # Replace with the actual folder path
+      register: folder_stat
+
+    - name: Remove folder /var/cache/dnf if it is not a symlink
       ansible.builtin.file:
-        path: /var/cache/yum/x86_64
+        path: /var/cache/dnf  # Replace with the actual folder path
+        state: absent
+      when: folder_stat.stat.islnk == False
+
+    - name: Ensure the source folder(/nfs/yum-repo/el8) exists
+      ansible.builtin.file:
+        path: /nfs/yum-repo/el8  # Replace with the actual folder path
         state: directory
-        mode: '0755'
-    - name: Remove if exists YUM cache directory
+        mode: '0755'  # Optional: Set the desired permissions for the folder
+
+    - name: Create symlink /var/cache/dnf
       ansible.builtin.file:
-        path: /var/cache/yum/x86_64/8
-        state: absent
-    - name: Create a symbolic link for YUM cache directory
-      ansible.builtin.file:
-        src: /nfs/yum-repo/el8
-        dest: /var/cache/yum/x86_64/8
+        src: "/nfs/yum-repo/el8"          # Replace with the actual target path
+        dest: "/var/cache/dnf"         # Replace with the desired symlink path
         state: link
-        force: yes
-    - name: Install DNF
-      yum:
-        name: dnf
-        state: present
-    - name: Install yum-config-manager
-      yum:
-        name: yum-utils
-        state: present
-    - name: Remove if exists DNF cache directory
-      ansible.builtin.file:
-        path: /var/cache/dnf
-        state: absent
-    - name: Create a symbolic link for DNF cache directory
-      ansible.builtin.file:
-        src: /nfs/yum-repo/el8
-        dest: /var/cache/dnf
-        state: link
-        force: yes
-    - name: Start Firewalld service
-      systemd:
-        state: started
-        name: firewalld
-    - name: Firewall for mysqld service
-      ansible.posix.firewalld:
-        service: mysql
-        permanent: yes
-        immediate: yes
-        state: enabled
+
     - name: Execute shell commands
       command: chdir=/tmp/ {{ item }}
       with_items:
-        - echo Hello World
+        - dnf repolist
         - echo Completed applying to template EL8
+
