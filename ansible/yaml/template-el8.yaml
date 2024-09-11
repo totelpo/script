@@ -1,0 +1,85 @@
+-
+  name: EL8 Template
+  hosts: el8-080
+  tasks:
+    - name: DNF keep cache
+      ansible.builtin.lineinfile:
+        path: /etc/dnf/dnf.conf
+        regexp: '^keepcache='
+        line: keepcache=1
+    - name: YUM keep cache
+      ansible.builtin.lineinfile:
+        path: /etc/yum.conf
+        regexp: '^keepcache='
+        line: keepcache=1
+    - name: Disable SELinux
+      ansible.posix.selinux:
+        policy: targeted
+        state: permissive
+
+    - name: Ensure NFS client packages are installed
+      ansible.builtin.yum:
+        name: nfs-utils
+        state: present
+
+    - name: Ensure NFS service(nfs-client.target) is enabled and started
+      ansible.builtin.systemd:
+        name: nfs-client.target
+        enabled: yes
+        state: started
+
+    - name: Mount an NFS volume
+      ansible.posix.mount:
+        src: 192.168.122.1:/nfs
+        path: /nfs
+        opts: rw,sync,hard
+        state: mounted
+        fstype: nfs
+    - name: Create YUM cache directory
+      ansible.builtin.file:
+        path: /var/cache/yum/x86_64
+        state: directory
+        mode: '0755'
+    - name: Remove if exists YUM cache directory
+      ansible.builtin.file:
+        path: /var/cache/yum/x86_64/8
+        state: absent
+    - name: Create a symbolic link for YUM cache directory
+      ansible.builtin.file:
+        src: /nfs/yum-repo/el8
+        dest: /var/cache/yum/x86_64/8
+        state: link
+        force: yes
+    - name: Install DNF
+      yum:
+        name: dnf
+        state: present
+    - name: Install yum-config-manager
+      yum:
+        name: yum-utils
+        state: present
+    - name: Remove if exists DNF cache directory
+      ansible.builtin.file:
+        path: /var/cache/dnf
+        state: absent
+    - name: Create a symbolic link for DNF cache directory
+      ansible.builtin.file:
+        src: /nfs/yum-repo/el8
+        dest: /var/cache/dnf
+        state: link
+        force: yes
+    - name: Start Firewalld service
+      systemd:
+        state: started
+        name: firewalld
+    - name: Firewall for mysqld service
+      ansible.posix.firewalld:
+        service: mysql
+        permanent: yes
+        immediate: yes
+        state: enabled
+    - name: Execute shell commands
+      command: chdir=/tmp/ {{ item }}
+      with_items:
+        - echo Hello World
+        - echo Completed applying to template EL8
