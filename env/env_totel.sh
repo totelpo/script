@@ -1,9 +1,13 @@
 # This env file must be be called from ~/.bashrc
 # totel 202408 
+# totel 20240911 Set PS1 and PROMPT_COMMAND
+PS1_ORIG="${PS1}"
+PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '         # shell prompt
+PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME}:$(basename $(pwd))\007"'   # tab title
 PATH_ORIG=$PATH
 GITHUB_DIR=/github/totelpo
 SCRIPT_DIR=${GITHUB_DIR}/script
-PATH_MISC=${SCRIPT_DIR}/txt2html:${SCRIPT_DIR}/pix:${SCRIPT_DIR}/kvm:${SCRIPT_DIR}/ansible::${SCRIPT_DIR}/git
+PATH_MISC=${SCRIPT_DIR}/txt2html:${SCRIPT_DIR}/pix:${SCRIPT_DIR}/kvm:${SCRIPT_DIR}/ansible:${SCRIPT_DIR}/git
 PATH=$PATH_ORIG:$PATH_MISC
 if [ -z "${TMPDIR}" ]; then # Check if variable is empty
   if   [ -d ~/t ]; then
