@@ -266,11 +266,11 @@ EOF
 	cat << EOF >> ${v_sh}.tmp
 
 (
-f-passwordless-ssh ${p_os} ${p_ip}
-f-ansible-template            ${p_os} ${v_ansible_host}
+set -e
+OS=${p_os} IP=${p_ip} passwordless-ssh.sh 
+ansible-wrapper.sh ${SCRIPT_DIR}/ansible/yaml/template-${p_os}.yaml ${v_ansible_host}
 IP=${p_ip} vm-os-admin-set-env.sh
 IP=${p_ip} vm-copy-scripts.sh
-ANSIBLE_COMMAND_WARNINGS=false ansible ${v_ansible_host} -a 'yum repolist enabled'
 # EXEC=y f-ansible-repo-percona-yum-install  ${v_ansible_host}            n
 # EXEC=y f-ansible-repo-mysql-yum-install    ${v_ansible_host} ${p_os} ''   n
 # EXEC=y f-ansible-repo-mmariadb-yum-install ${v_ansible_host} ${p_os} 11.2 n
