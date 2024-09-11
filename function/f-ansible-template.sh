@@ -1,6 +1,6 @@
 f-ansible-template(){
 if [ $# -eq 2 ]; then
-	echo -e "\n[EXECUTING] ${FUNCNAME[0]} $@"
+  f-message EXECUTING "${FUNCNAME[0]} $1 $2 $3"
 	i_os=$1
 	i_ansible_host=$2
 	ansible-wrapper.sh ${SCRIPT_DIR}/ansible/yaml/template-${i_os}.yaml $i_ansible_host
