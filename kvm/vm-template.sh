@@ -265,6 +265,7 @@ EOF
   fi
 	cat << EOF >> ${v_sh}.tmp
 
+(
 f-passwordless-ssh ${p_os} ${p_ip}
 f-ansible-template            ${p_os} ${v_ansible_host}
 IP=${p_ip} vm-os-admin-set-env.sh
@@ -273,6 +274,8 @@ ANSIBLE_COMMAND_WARNINGS=false ansible ${v_ansible_host} -a 'yum repolist enable
 # EXEC=y f-ansible-repo-percona-yum-install  ${v_ansible_host}            n
 # EXEC=y f-ansible-repo-mysql-yum-install    ${v_ansible_host} ${p_os} ''   n
 # EXEC=y f-ansible-repo-mmariadb-yum-install ${v_ansible_host} ${p_os} 11.2 n
+vm-arp-clear-unreachable-ip.sh
+)
 EOF
 	if [ "$p_exec" = y ]; then
 		f-exec-temp-script ${v_sh}.tmp
