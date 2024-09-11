@@ -30,7 +30,7 @@ if [ $# -eq 1 ]; then
 cd ${v_repo_dir}
 (
 set -e
-git remote set-url origin git@github.com:totelpo/${p_github_repo}.git
+# git remote set-url origin git@github.com:totelpo/${p_github_repo}.git
 for i_file in ${v_files_changed1}; do
 git add \${i_file}
 git commit -m "Update \$(basename \${i_file})"
