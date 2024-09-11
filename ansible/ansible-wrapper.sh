@@ -3,8 +3,6 @@ sc_name=$0
 source ${ENV_DIR}/env_function.sh
 source ${ENV_DIR}/env_script.sh
 
-# cd /home/totel/d/scripts/ansible/yaml
-
 f_use() {
 # DESC: totel 2022-08-10
 # USAGE: Run Asnible script 
