@@ -12,17 +12,17 @@ OS=el9 IP=192.168.122.90 $sc_name1
 }
 
 if [ ! -z "${OS}" -o ! -z "${IP}" ]; then
-  f-marker $sc_name1 $p_all_input_parameters
+  COLUMNS=100 f-marker $sc_name1 $p_all_input_parameters
   set -e
   echo; sh -xc "ssh-keygen -f ${HOME}/.ssh/known_hosts -R ${IP}"
   echo
   if [ "${OS}" = "el5" ]; then
-          sh -xc "ssh-copy-id -i ${HOME}/.ssh/id_rsa_kvm -o HostKeyAlgorithms=+ssh-rsa ${IP}"
+          sh -xc "ssh-copy-id -o StrictHostKeyChecking=no -i ${HOME}/.ssh/id_rsa_kvm -o HostKeyAlgorithms=+ssh-rsa ${IP}"
   else
-          sh -xc "ssh-copy-id -i ${HOME}/.ssh/id_rsa_kvm ${IP}"
+          sh -xc "ssh-copy-id -o StrictHostKeyChecking=no -i ${HOME}/.ssh/id_rsa_kvm ${IP}"
   fi
   echo -e "\n# Test passwordless SSH :"
-  sh -xc "ssh -i ${HOME}/.ssh/id_rsa_kvm ${IP} id"
+  sh -xc "ssh ${IP} id"
 else
   f_use
 fi
