@@ -16,7 +16,7 @@ exit
 }
 
 if [ ! -z "${IP}" -a ! -z "${PORT}" -a ! -z "${WAIT_MINUTE}" ]; then
-  COLUMNS=100 f-marker $sc_name1 $p_all_input_parameters
+  MARKER_WIDTH=100 f-marker $sc_name1 $p_all_input_parameters
 else
   f_use
 fi
