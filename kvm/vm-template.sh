@@ -268,6 +268,9 @@ EOF
 (
 set -e
 OS=${p_os} IP=${p_ip} passwordless-ssh.sh 
+echo
+ssh ${p_ip} "sudo less /var/log/anaconda/anaconda.log | sed -n '1p; \$p'"
+echo
 ansible-wrapper.sh ${SCRIPT_DIR}/ansible/yaml/template-${p_os}.yaml ${v_ansible_host}
 IP=${p_ip} vm-os-admin-set-env.sh
 IP=${p_ip} vm-copy-scripts.sh
