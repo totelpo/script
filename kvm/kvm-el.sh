@@ -36,15 +36,17 @@ if [ "$1" = "h" ]; then f_use; fi
 
 if [ ! -z "${VM}" -a ! -z "${IP}" ]; then
   f-marker $sc_name1 $p_all_input_parameters
+  set -e # needed to exit if the check script fails
   v_dir=${KVM_DIR}/${VM}
-  mkdir -p ${v_dir}
-  f-check-if-dir-is-empty ${v_dir}
-  f-check-if-vm-exists    ${VM}
+  check-if-vm-exists.sh
+  DIR_NAME=${v_dir} check-if-dir-is-empty.sh
   if [ "$PROTO" = "static" ]; then
-    f-check-if-kvm-ip-is-valid ${IP}
-    f-check-if-ip-in-used      ${IP}
-    f-check-if-similar-vm-exists-based-on-ip ${IP}
+    check-if-kvm-ip-is-valid.sh
+    check-if-ip-in-used.sh
+    check-if-similar-vm-exists-based-on-ip.sh
   fi
+  set +e
+  mkdir -p ${v_dir}
   if   [ "${OS}" = "el8" ]; then
     ISO_FILE=${ISO_FILE:=/iso/ol/OracleLinux-R8-U10-x86_64-dvd.iso}
     OS_VARIANT=${OS_VARIANT:=ol8.10}
@@ -55,10 +57,10 @@ if [ ! -z "${VM}" -a ! -z "${IP}" ]; then
     OS_VARIANT=${OS_VARIANT:=ol9.4}
     NETDEV=${NETDEV:=enp1s0}    # f-el-kickstart-update
   else
-    echo "Invalid value OS=${OS}."
+    echo "Unsupported value OS=${OS}."
     exit 1
   fi
-  if [ "${KS}" = "no" ]; then   # use for initial VM creation to get a sample of anaconda-ks.cfg
+  if [ "${KS}" = "no" ]; then   # use for initial VM creation to get a sample of anaconda-ks.cfg and NETDEV
     v_ks1=
     v_ks2=
   else
