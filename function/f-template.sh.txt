@@ -1,7 +1,7 @@
-f-check-if-vm-exists(){
+f-template(){
   fn_name=${FUNCNAME[0]}
-	f-message EXECUTING "${fn_name} $1 $2 $3"
-  v_tmp=${TMPDIR}/${fn_name}-tmp
+  fn_tmp=${TMPDIR}/${fn_name}-tmp
+  f-marker $fn_name $@
 	fi_vm_name=$1
 	virsh list --all | grep " $fi_vm_name "
 	fx_check_if_vm_exists=$?
@@ -11,3 +11,5 @@ f-check-if-vm-exists(){
 	fi
 	echo -e "Passed."
 }
+
+# Sample call : COLUMNS=100 f-template
