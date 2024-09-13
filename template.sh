@@ -5,8 +5,6 @@ sc_name=$0
 source ${ENV_DIR}/env_function.sh
 source ${ENV_DIR}/env_script.sh
 
-# f-marker $sc_name1 $p_all_input_parameters  # move after all the checks
-
 f_use(){
           echo "
  DESC: This is a template script
@@ -18,11 +16,11 @@ exit 1
 }
 
 # Variables with default values
-VM="${VM:=-el9-090}"   # hyphen before the value denotes that we will only assign the value if the variable is empty
+VM="${VM:=el9-090}" 
 IP="${IP:=192.168.122.90}"
 
 if [ ! -z "${VM}" -a ! -z "${IP}" ]; then # if required variables are not empty
-  f-marker $sc_name1 $p_all_input_parameters
+  COLUMNS=105 f-marker $sc_name1 $p_all_input_parameters    # COLUMNS=105 for main script; COLUMNS=100(default) for minor script
 else
   f_use
 fi
