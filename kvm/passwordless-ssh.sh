@@ -12,7 +12,7 @@ OS=el9 IP=192.168.122.90 $sc_name1
 }
 
 if [ ! -z "${OS}" -o ! -z "${IP}" ]; then
-  COLUMNS=100 f-marker $sc_name1 $p_all_input_parameters
+  f-marker $sc_name1 IP=${IP}
   set -e
   echo; sh -xc "ssh-keygen -f ${HOME}/.ssh/known_hosts -R ${IP}"
   echo
