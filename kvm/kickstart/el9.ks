@@ -67,9 +67,11 @@ EOF
 # Set the correct permissions for the sudoers file
 chmod 0440 /etc/sudoers.d/osadmin
 
-echo "Installation complete"
+echo "Installation complete. Rebooting ....."
+sh -xc 'sleep 9'
 
 # Reboot automatically after installation
 %end
 
 reboot
+
