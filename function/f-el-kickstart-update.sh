@@ -34,7 +34,7 @@ sed -i "s|^network .*|network --device $NETDEV --bootproto $PROTO $v_ip_param --
 sed -i "s|osadmin|${VM_OS_ADMIN}|g" ${KS_TMP}
 sh -xc "grep '^network' ${KS_TMP}"
 EOF
-	EXEC=y COLUMNS=95 f-exec-temp-script $fn_tmp.sh
+	EXEC=y MARKER_WIDTH=95 f-exec-temp-script $fn_tmp.sh
 fi
 }
 
