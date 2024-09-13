@@ -57,6 +57,8 @@ pwpolicy luks --minlen=6 --minquality=1 --notstrict --nochanges --notempty
 %end
 
 %post
+# Here you can add post-installation tasks
+
 # Create /etc/sudoers.d/osadmin with appropriate sudo permissions
 cat <<EOF > /etc/sudoers.d/osadmin
 # Grant 'osadmin' user full sudo privileges without a password
@@ -66,5 +68,11 @@ EOF
 # Set the correct permissions for the sudoers file
 chmod 0440 /etc/sudoers.d/osadmin
 
+echo "Installation complete. Rebooting ....."
+sh -xc 'sleep 9'
+
+# Reboot automatically after installation
 %end
+
+reboot
 
