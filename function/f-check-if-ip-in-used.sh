@@ -10,5 +10,5 @@ f-check-if-ip-in-used(){
 			exit 1
 		fi
 	fi
-	echo -e "Passed."
+	echo -e "PASSED."
 }
