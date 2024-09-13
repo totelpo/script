@@ -1,12 +1,34 @@
-f-check-if-dir-is-empty(){
-	f-message EXECUTING "${FUNCNAME[0]} $1 $2 $3" 
-	fi_dir_name=$1
-	[ "$(ls -A $fi_dir_name)" ]
-	fx_check_if_dir_is_empty=$?
-	if [ $fx_check_if_dir_is_empty -eq 0 ]; then
-		echo -e "\nDirectory $fi_dir_name is NOT empty.\n"
-		ls -lhA $fi_dir_name
-		exit
-	fi
-	echo -e "PASSED."
+#!/bin/bash
+# totel 20240913 Convert from function to shell script : 'mv function/f-check-if-dir-is-empty.sh bin/check-if-dir-is-empty.sh'
+
+sc_name=$0
+source ${ENV_DIR}/env_function.sh
+source ${ENV_DIR}/env_script.sh
+
+# f-marker $sc_name1 $p_all_input_parameters  # move after all the checks
+
+f_use(){
+          echo "
+ DESC: This is a template script
+USAGE:"
+  cat << EOF | column -t
+DIR_NAME=/vm/kvm/somedir $sc_name1
+EOF
+exit 1
 }
+
+if [ ! -z "${DIR_NAME}" ]; then # if required variables are not empty
+  f-marker $sc_name1 $p_all_input_parameters
+else
+  f_use
+fi
+
+if [ ! -d "${DIR_NAME}" ]; then
+  echo "Directory does not exist."
+elif [ -z "$(ls -A "${DIR_NAME}")" ]; then
+  echo "Directory is empty."
+else
+  echo "FAILED. Directory (${DIR_NAME}) exists and is not empty."
+  exit 1
+fi
+echo -e "PASSED."
