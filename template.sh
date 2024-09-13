@@ -1,11 +1,10 @@
 #!/bin/bash
+# totel 20240913 Some info here
+
 sc_name=$0
-set -e
-grep env_totel.sh ~/.bashrc    > /dev/null
-ls -lh ${ENV_DIR}/env_totel.sh > /dev/null
 source ${ENV_DIR}/env_function.sh
 source ${ENV_DIR}/env_script.sh
-set +e
+
 # f-marker $sc_name1 $p_all_input_parameters  # move after all the checks
 
 f_use(){
@@ -13,23 +12,25 @@ f_use(){
  DESC: This is a template script
 USAGE:"
   cat << EOF | column -t
-EXEC=y VM=el9-090 EL=el9 KS=el9.ks PROTO=static IP=192.168.122.90 DISK_GB=20 RAM_GB=2 CPU=2 $sc_name1
-EXEC=y VM=el9-090 EL=el9 KS=no     PROTO=static IP=192.168.122.90 DISK_GB=20 RAM_GB=2 CPU=2 $sc_name1
-EXEC=y VM=el8-080 EL=el8 KS=el8.ks PROTO=static IP=192.168.122.80 DISK_GB=20 RAM_GB=2 CPU=2 $sc_name1
-EXEC=y VM=el8-080 EL=el8 KS=no     PROTO=static IP=192.168.122.80 DISK_GB=20 RAM_GB=2 CPU=2 $sc_name1
+EXEC=y VM=el9-090 IP=192.168.122.90 $sc_name1
 EOF
-exit
+exit 1
 }
 
-if [ "$1" = "h" ]; then f_use; fi
-
 # Variables with default values
-ISO_FILE=${ISO_FILE:=/iso/ol/OracleLinux-R8-U10-x86_64-dvd.iso} 
-MYSQL_USERNAME="${MYSQL_USERNAME:=-clustercheckuser}"
-p_os_variant="$1";   p_os_variant=${p_os_variant:=el7}
+VM="${VM:=-el9-090}"   # hyphen before the value denotes that we will only assign the value if the variable is empty
+IP="${IP:=192.168.122.90}"
 
-if [ ! -z "${VM}" -a ! -z "${IP}" ]; then
+if [ ! -z "${VM}" -a ! -z "${IP}" ]; then # if required variables are not empty
   f-marker $sc_name1 $p_all_input_parameters
 else
   f_use
+fi
+
+echo "Generate some script here" > $sc_tmp.sh
+
+if [ "${EXEC}" = "y" ]; then
+  bash -x $sc_tmp.sh
+else
+  echo "We need to manually execute :\nbash -x $sc_tmp.sh"
 fi
