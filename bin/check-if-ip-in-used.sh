@@ -1,14 +1,32 @@
-f-check-if-ip-in-used(){
-	f-message EXECUTING "${FUNCNAME[0]} $1 $2"
-	fi_ip=$1
-	fi_exit="$2"; fi_exit=${fi_exit:=y}
-	ping -c 1 $fi_ip > /dev/null
-	fx_check_if_ip_in_used=$?
-	if [ $fx_check_if_ip_in_used -eq 0 ]; then
-		echo -e "IP $fi_ip is alive."
-		if [ "$fi_exit" = "y" ]; then
-			exit 1
-		fi
-	fi
-	echo -e "PASSED."
+#!/bin/bash
+# totel 20240913 Convert from bash function to bash script : mv 'mv function/f-check-if-ip-in-used.sh bin/check-if-ip-in-used.sh'
+
+sc_name=$0
+source ${ENV_DIR}/env_function.sh
+source ${ENV_DIR}/env_script.sh
+
+# f-marker $sc_name1 $p_all_input_parameters  # move after all the checks
+
+f_use(){
+          echo "
+ DESC: This is a template script
+USAGE:"
+  cat << EOF | column -t
+IP=192.168.122.90 $sc_name1
+EOF
+exit 1
 }
+
+if [ ! -z "${IP}" ]; then # if required variables are not empty
+  f-marker $sc_name1 $p_all_input_parameters
+else
+  f_use
+fi
+
+ping -c 1 ${IP} > /dev/null
+v_check_if_ip_in_used=$?
+if [ ${v_check_if_ip_in_used} -eq 0 ]; then
+  echo -e "IP ${IP} is alive."
+  exit 1
+fi
+echo -e "PASSED."
