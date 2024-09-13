@@ -2,7 +2,7 @@ f-check-if-kvm-ip-is-valid(){
 	f-message EXECUTING "${FUNCNAME[0]} $1 $2 $3"
 	fi_ip=$1
 	v_grep=192.168.122
-	echo $fi_ip | grep "$v_grep."
+	echo $fi_ip | grep "$v_grep." > /dev/null
 	fx_check_if_kvm_ip_is_valid=$?
 	if [ $fx_check_if_kvm_ip_is_valid -gt 0 ]; then
 		echo -e "\nIP $fi_ip is invalid. Must be $v_grep.X\n"
@@ -13,6 +13,6 @@ f-check-if-kvm-ip-is-valid(){
 		echo -e "\nIP must be $v_grep.[2-254]\n"
 		exit
 	fi
-	echo -e "Passed."
+	echo -e "PASSED."
 }
 
