@@ -24,9 +24,9 @@ else
 fi
 
 if [ ! -d "${DIR_NAME}" ]; then
-  echo "Directory does not exist."
+  echo "Directory does not exist." > /dev/null
 elif [ -z "$(ls -A "${DIR_NAME}")" ]; then
-  echo "Directory is empty."
+  echo "Directory is empty."  > /dev/null
 else
   echo "FAILED. Directory (${DIR_NAME}) exists and is not empty."
   exit 1
