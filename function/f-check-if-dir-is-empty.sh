@@ -8,5 +8,5 @@ f-check-if-dir-is-empty(){
 		ls -lhA $fi_dir_name
 		exit
 	fi
-	echo -e "Passed."
+	echo -e "PASSED."
 }
