@@ -36,16 +36,19 @@ if [ "$1" = "h" ]; then f_use; fi
 
 if [ ! -z "${VM}" -a ! -z "${IP}" ]; then
   f-marker $sc_name1 $p_all_input_parameters
-  set -e # needed to exit if the check script fails
   v_dir=${KVM_DIR}/${VM}
+  f_checks(){
+  set -e # needed to exit if the check script fails
   check-if-vm-exists.sh
-  DIR_NAME=${v_dir} check-if-dir-is-empty.sh
+  DIR_NAME=${v_dir} check-if-dir-is-empty-or-not-exists.sh
   if [ "$PROTO" = "static" ]; then
     check-if-kvm-ip-is-valid.sh
     check-if-ip-in-used.sh
     check-if-similar-vm-exists-based-on-ip.sh
   fi
   set +e
+  }
+  f_checks
   mkdir -p ${v_dir}
   if   [ "${OS}" = "el8" ]; then
     ISO_FILE=${ISO_FILE:=/iso/ol/OracleLinux-R8-U10-x86_64-dvd.iso}
