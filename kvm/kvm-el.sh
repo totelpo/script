@@ -35,7 +35,7 @@ exit
 if [ "$1" = "h" ]; then f_use; fi
 
 if [ ! -z "${VM}" -a ! -z "${IP}" ]; then
-  COLUMNS=105 f-marker $sc_name1 OS=${OS} VM=${VM} IP=${IP}
+  MARKER_WIDTH=105 f-marker $sc_name1 OS=${OS} VM=${VM} IP=${IP}
   v_dir=${KVM_DIR}/${VM}
   f_checks(){
   set -e # needed to exit if the check script fails
@@ -71,14 +71,16 @@ if [ ! -z "${VM}" -a ! -z "${IP}" ]; then
     cp ${SCRIPT_DIR}/kvm/kickstart/${KS} $KS_TMP
     v_ks1="--initrd-inject=${KS_TMP}"
     v_ks2="inst.ks=file:/${KS}"
-    COLUMNS=100 f-el-kickstart-update 
+    f-el-kickstart-update 
     unset KS_TMP
   fi
   RAM_GB=${RAM_GB:=2}
   CPU=${CPU:=2}
   cat << EOF > $sc_tmp-${OS}.sh
 vm-arp-clear-unreachable-ip.sh
+(
 set -e
+f-marker virt-install ${VM}
 virt-install \\
 --network bridge:virbr0,model=virtio \\
 --name ${VM} \\
@@ -88,7 +90,7 @@ virt-install \\
 --location=${ISO_FILE} \\
 --os-variant ${OS_VARIANT} \\
 --graphics none \\
---wait 0 \\
+--noautoconsole \\
 ${v_ks1} \\
 --extra-args="${v_ks2} ip=192.168.122.2 netmask=255.255.255.0 gateway=192.168.122.1  console=ttyS0,115200n8" 
 
@@ -97,12 +99,13 @@ IP=${IP}  PORT=22  WAIT_MINUTE=9  ip-port-wait-to-open.sh
 
 OS=${OS} IP=${IP} passwordless-ssh.sh
 
-COLUMNS=105 f-marker "Check anaconda.log for OS install start and finish"
+f-marker "Check anaconda.log for OS install start and finish"
 ssh ${IP} "sudo less /var/log/anaconda/anaconda.log | sed -n '1p; \\\$p'"
 
 set +e
+)
 EOF
-  COLUMNS=100 f-exec-temp-script $sc_tmp-${OS}.sh
+  f-exec-temp-script $sc_tmp-${OS}.sh
 else
   f_use
 fi
