@@ -36,7 +36,7 @@ if [ "$1" = "h" ]; then f_use; fi
 
 if [ ! -z "${VM}" -a ! -z "${IP}" ]; then
   f-marker $sc_name1 $p_all_input_parameters
-  v_dir=/vm/kvm/${VM}
+  v_dir=${KVM_DIR}/${VM}
   mkdir -p ${v_dir}
   f-check-if-dir-is-empty ${v_dir}
   f-check-if-vm-exists    ${VM}
