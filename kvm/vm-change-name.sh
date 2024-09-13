@@ -56,7 +56,7 @@ ls -lh ${sc_tmp}.xml
 )
 EOF
 if [ "${EXEC}" = "y" ]; then
-  bash -x /home/totel/t/vm-rename.sh
+  bash -x ${sc_tmp}.sh
 else
-  echo -e "\nbash -x /home/totel/t/vm-rename.sh\n"
+  echo -e "\nbash -x ${sc_tmp}.sh\n"
 fi
