@@ -56,6 +56,8 @@ user --groups=wheel --name=osadmin --password=$6$1qFTiy2cDxkBy5Kg$Ge8OlF2oK3gg.D
 services --enabled="chronyd"
 
 %post
+# Here you can add post-installation tasks
+
 # Create /etc/sudoers.d/osadmin with appropriate sudo permissions
 cat <<EOF > /etc/sudoers.d/osadmin
 # Grant 'osadmin' user full sudo privileges without a password
@@ -65,4 +67,9 @@ EOF
 # Set the correct permissions for the sudoers file
 chmod 0440 /etc/sudoers.d/osadmin
 
+echo "Installation complete"
+
+# Reboot automatically after installation
 %end
+
+reboot
