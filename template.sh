@@ -20,7 +20,7 @@ VM="${VM:=el9-090}"
 IP="${IP:=192.168.122.90}"
 
 if [ ! -z "${VM}" -a ! -z "${IP}" ]; then # if required variables are not empty
-  COLUMNS=105 f-marker $sc_name1 $p_all_input_parameters    # COLUMNS=105 for main script; COLUMNS=100(default) for minor script
+  MARKER_WIDTH=105 f-marker $sc_name1 $p_all_input_parameters    # MARKER_WIDTH=105 for main script; MARKER_WIDTH=100(default) for minor script
 else
   f_use
 fi
