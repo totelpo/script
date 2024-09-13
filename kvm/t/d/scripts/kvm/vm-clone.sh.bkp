@@ -1,0 +1,89 @@
+#!/bin/bash
+# /nfs/db/scripts/bin-root-c7/vm-clone.sh
+fn_name=$(basename $0)   # ${FUNCNAME[0]}
+fn_name1="${fn_name%.*}" # w/o ext
+
+
+f_use() {
+  echo "
+totel 2020
+ DESC: clone rac vm 
+USAGE: 
+$fn_name  VM_ORIG   VM_CLONE  CLONE_IP    
+$fn_name  centos7t  c7n71     71
+$fn_name  rocky8t   r8n81     81
+" | sed "s|$HOME|~|g"
+
+exit
+}
+
+s=~/t/$fn_name1.s
+t=~/t/$fn_name1.t
+l=~/t/$fn_name1.l
+
+p_orig_vm="$1";   p_orig_vm=${p_orig_vm:=centos7t} # default value
+p_clone_vm="$2" ; p_clone_vm=${p_clone_vm:=c7n71}           # default value
+p_clone_ip="$3" ; p_clone_ip=${p_clone_ip:=71}           # default value
+
+if [ "$p_orig_vm" = "$p_clone_vm" ]; then
+  echo -e "\np_orig_vm($p_orig_vm) must NOT be same with p_clone_vm($p_clone_vm)\n"
+  exit
+fi
+
+if [ $# -eq 3 ]; then
+	f_clone(){
+  
+	virsh destroy  $p_orig_vm; 
+
+	set -e   # enable  script exit-on-error and return an exit status you can check with $?
+
+	virsh domblklist $p_orig_vm | grep '.img' #| sed "s/$p_orig_vm/$p_clone_vm/g" | awk '{ print "--file "$2 }'
+
+	v_files=$(virsh domblklist $p_orig_vm | grep $p_orig_vm | sed "s/$p_orig_vm/$p_clone_vm/g" | awk '{ print "--file "$2 }')
+	v_files_orig=$(virsh domblklist $p_orig_vm | grep $p_orig_vm | awk '{ print "--file "$2 }')
+	echo -e "$v_files\n"
+
+	v_dir=`echo "$v_files" | awk '{print $2}' | grep 'root.img' | sort -u | while read i; do dirname $i; done`
+	#  v_dir1=`echo "$v_files" | awk '{print $2}' | grep "$p_clone_vm.img" | sort -u | head -1 | while read i; do dirname $i; done`
+
+	mkdir -p  $v_dir
+
+	virt-clone \
+	--connect qemu:///system \
+	--original $p_orig_vm \
+	--name $p_clone_vm \
+	$v_files
+
+	virsh start $p_clone_vm
+	
+	#virsh domiflist  $p_clone_vm                  # list interface
+	echo
+	# virsh domblklist $p_orig_vm --details        # list disk
+	#virsh domblklist $p_clone_vm --details        # list disk
+
+	#du -shc $v_dir/* ; echo
+	#ls -lh  $v_dir/* ; echo
+
+	vm-list.sh | grep -v shut-off
+	}
+	f_clone
+	f_get_ip(){
+		v_mac=`virsh domiflist $p_clone_vm | awk '{ print $5 }' | grep . | sed '1d'`
+		v_ip=`arp -an | grep "$v_mac" | awk '{ print $2}' | sed 's/(//; s/)//'`
+	}
+	echo -e "\nWaiting for $p_clone_vm to acquire an IP address" 
+	while [ "$v_ip" = "" ]; do
+		f_get_ip
+		printf "."
+		sleep 5
+	done
+	v_cmd="vm-change-hostname-ip-p1.sh $p_clone_vm $p_clone_ip"
+	echo -e "\nexecuting :\n$v_cmd"
+	eval "$v_cmd"
+	sleep 2
+	vm-list.sh | grep -v shut-off
+	# cleanup known hosts for new vm
+	ssh-keygen -f "/home/totel/.ssh/known_hosts" -R "192.168.122.$p_clone_ip"
+else
+	f_use
+fi
