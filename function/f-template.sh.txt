@@ -12,4 +12,4 @@ f-template(){
 	echo -e "Passed."
 }
 
-# Sample call : COLUMNS=100 f-template
+# Sample call : MARKER_WIDTH=100 f-template
