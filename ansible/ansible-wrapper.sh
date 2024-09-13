@@ -24,7 +24,7 @@ p_yaml="$1"; p_yaml=${p_yaml:=el7-ps57-install.yaml} # default value
 p_host="$2"; p_host=${p_host:=c7n77} # default value
 p_hosts_file="$3"; p_hosts_file=${p_hosts_file:=/etc/ansible/hosts} # default value
 
-f-marker $sc_name1 $p_all_input_parameters
+f-marker $sc_name1 $(basename ${p_yaml})
 
 set -e
 if [ ! -f $p_yaml ]; then
