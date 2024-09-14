@@ -1,12 +1,13 @@
 # This env file must be be called from ~/.bashrc
 # totel 20240909 Set environment variable for VM_OS_ADMIN 
 PATH_ORIG=$PATH
+HOME=
 SCRIPT_DIR=${HOME}/script
 PATH_MISC=${SCRIPT_DIR}/bin
 PATH=$PATH_ORIG:$PATH_MISC
 if [ -z "${TMPDIR}" ]; then # Check if variable is empty
   if   [ -d ~/t ]; then
-    TMPDIR=~/t
+    TMPDIR=${HOME}/t
   elif [ -d /tmp ]; then
     TMPDIR=/tmp
   else
