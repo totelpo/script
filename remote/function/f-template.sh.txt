@@ -1,0 +1,15 @@
+f-template(){
+  fn_name=${FUNCNAME[0]}
+  fn_tmp=${TMPDIR}/${fn_name}-tmp
+  f-marker $fn_name $@
+	fi_vm_name=$1
+	virsh list --all | grep " $fi_vm_name "
+	fx_check_if_vm_exists=$?
+	if [ $fx_check_if_vm_exists -eq 0 ]; then
+		echo -e "\nFAILED : VM $fi_vm_name already exists.\n"
+		exit
+	fi
+	echo -e "Passed."
+}
+
+# Sample call : MARKER_WIDTH=100 f-template
