@@ -57,18 +57,31 @@ services --enabled="chronyd"
 
 %post
 # Here you can add post-installation tasks
+USER=osadmin
 
-# Create /etc/sudoers.d/osadmin with appropriate sudo permissions
-cat <<EOF > /etc/sudoers.d/osadmin
-# Grant 'osadmin' user full sudo privileges without a password
-osadmin ALL=(ALL) NOPASSWD: ALL
+echo "# Create /etc/sudoers.d/${USER} with appropriate sudo permissions"
+cat <<EOF > /etc/sudoers.d/${USER}
+# Grant '${USER}' user full sudo privileges without a password
+${USER} ALL=(ALL) NOPASSWD: ALL
 EOF
 
 # Set the correct permissions for the sudoers file
-chmod 0440 /etc/sudoers.d/osadmin
+chmod 0440 /etc/sudoers.d/${USER}
 
+echo "# Add the injected public key to authorized_keys"
+HOME_DIR="/home/$USER"
+SSH_DIR="$HOME_DIR/.ssh"
+KEY_PUB="Replace with contents of ~/.ssh/id_rsa_kvm.pub"
+
+mkdir -p ${SSH_DIR}
+echo "${KEY_PUB}" >> ${SSH_DIR}/authorized_keys 2> ${HOME_DIR}/setup-authorized_keys.log
+cp ${KEY_PUB}.pub ${SSH_DIR}/
+chmod 700 ${SSH_DIR}
+chmod 600 ${SSH_DIR}/authorized_keys
+chown $USER:$USER -R ${SSH_DIR}
+
+# Done
 echo "Installation complete. Rebooting ....."
-sh -xc 'sleep 9'
 
 # Reboot automatically after installation
 %end
