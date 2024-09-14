@@ -36,7 +36,12 @@ v_list="`echo $(grep -v '^#' ${v_file_list} )`"
 sh -xc "rsync -a ${v_list} ${IP}:script/${v_dir}/"
 }
 
-sh -xc "rsync -a ${SCRIPT_DIR}/remote/*.sh ${IP}:script/bin/"
+cd ${SCRIPT_DIR}
+pwd
+sh -xc "rsync -a remote/*.sh          ${IP}:script/bin/"
+sh -xc "rsync -a remote/function/*.sh ${IP}:script/function/"
+
 f_main function
 f_main env
+f_main bin
 
