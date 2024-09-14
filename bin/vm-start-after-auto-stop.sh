@@ -25,7 +25,7 @@ v_timeout=$((WAIT_MINUTE*60))
 v_timeout1=0
 v_sleep=20
 
-echo -e "\nWaiting for ${VM} to auto shutdown after OS install before starting up. Check interval is ${v_sleep} seconds. WAIT_MINUTE=${WAIT_MINUTE}" 
+echo -e "\nWaiting for ${VM} to auto shutdown after OS install before starting up. Check interval is ${v_sleep} seconds. Max WAIT_MINUTE=${WAIT_MINUTE}" 
 until ( virsh list --all | grep " ${VM} " | grep 'shut off' 2>&1 &> /dev/null ); do
   printf "."
   sleep $v_sleep
