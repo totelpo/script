@@ -33,6 +33,9 @@ VM_KEY=id_rsa_kvm
 VM_KEY_FILE=${HOME}/.ssh/${VM_KEY}
 export VM_OS_ADMIN VM_OS_ADMIN_PASS VM_DOMAIN VM_KEY VM_KEY_FILE 
 
+ANSIBLE_HOSTS_FILE=/etc/ansible/hosts
+export ANSIBLE_HOSTS_FILE
+
 export MY_CNF_KVM=${CONF_DIR}/kvm-my.cnf
 
 # If not running interactively, don't do anything as doing an echo command below make ansible fail
