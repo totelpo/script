@@ -32,7 +32,8 @@ else
 	cat << EOF > $fn_tmp.sh
 sed -i "s|^network .*|network --device $NETDEV --bootproto $PROTO $v_ip_param --noipv6 --netmask 255.255.255.0 --gateway 192.168.122.1 --nameserver 192.168.122.1,8.8.8.8 --hostname ${v_hostname}|g" ${KS_TMP}
 sed -i "s|osadmin|${VM_OS_ADMIN}|g" ${KS_TMP}
-sh -xc "grep '^network' ${KS_TMP}"
+sed -i "s|KEY_PUB=.*|KEY_PUB='$(cat ${VM_KEY_FILE}.pub)'|g" ${KS_TMP}
+# sh -xc "grep '^network' ${KS_TMP}"
 EOF
 	EXEC=y MARKER_WIDTH=95 f-exec-temp-script $fn_tmp.sh
 fi
