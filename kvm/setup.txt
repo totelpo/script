@@ -24,7 +24,11 @@ EOF
 / 4 | NFS
 See ${GITHUB_DIR}/demo/ubuntu/nfs-u22.txt
 
-/ 4 | ansible
+/ 5 | ansible
 See ${GITHUB_DIR}/demo/ansible/010-ansible-on-u22.txt
+
+/ 5 | expect
+See ${GITHUB_DIR}/demo/ubuntu/expect-u22.txt
+sudo apt install expect
 
 
