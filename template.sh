@@ -18,6 +18,7 @@ exit 1
 # Variables with default values
 VM="${VM:=el9-090}" 
 IP="${IP:=192.168.122.90}"
+EXEC="${EXEC:=n}" 
 
 if [ ! -z "${VM}" -a ! -z "${IP}" ]; then # if required variables are not empty
   MARKER_WIDTH=105 f-marker $sc_name1 $p_all_input_parameters    # MARKER_WIDTH=105 for main script; MARKER_WIDTH=100(default) for minor script
