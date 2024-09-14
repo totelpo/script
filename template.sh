@@ -22,14 +22,14 @@ EXEC="${EXEC:=n}"
 
 if [ ! -z "${VM}" -a ! -z "${IP}" ]; then # if required variables are not empty
   MARKER_WIDTH=105 f-marker $sc_name1 $p_all_input_parameters    # MARKER_WIDTH=105 for main script; MARKER_WIDTH=100(default) for minor script
+  set -e; check-os-support.sh; set +e
 else
+  # Ensure required variables are not empty (that is already declared in bashrc).
+  echo -e "
+FAILED: Empty variables found.
+VM=${VM}
+IP=${IP}
+"
   f_use
 fi
 
-echo "Generate some script here" > $sc_tmp.sh
-
-if [ "${EXEC}" = "y" ]; then
-  bash -x $sc_tmp.sh
-else
-  echo "We need to manually execute :\nbash -x $sc_tmp.sh"
-fi
