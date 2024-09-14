@@ -263,17 +263,18 @@ EOF
 EXEC=y VM=${p_vm_name} KS=${p_os}.ks PROTO=static IP=$p_ip f-kvm-${p_os} 1
 EOF
   fi
+  cp ${SCRIPT_DIR}/ansible/yaml/template-el8-el9.yaml ${sc_tmp}-${p_os}.yaml
+  sed -i "s|el8-or-el9|${p_os}|g" ${sc_tmp}-${p_os}.yaml
 	cat << EOF >> ${v_sh}.tmp
 
 (
 set -e
-ansible-wrapper.sh ${SCRIPT_DIR}/ansible/yaml/template-${p_os}.yaml ${v_ansible_host}
+ansible-wrapper.sh ${sc_tmp}-${p_os}.yaml ${v_ansible_host}
 IP=${p_ip} vm-os-admin-set-env.sh
 IP=${p_ip} vm-copy-scripts.sh
 # EXEC=y f-ansible-repo-percona-yum-install  ${v_ansible_host}            n
 # EXEC=y f-ansible-repo-mysql-yum-install    ${v_ansible_host} ${p_os} ''   n
 # EXEC=y f-ansible-repo-mmariadb-yum-install ${v_ansible_host} ${p_os} 11.2 n
-vm-arp-clear-unreachable-ip.sh
 )
 EOF
 	if [ "$p_exec" = y ]; then
