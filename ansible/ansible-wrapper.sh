@@ -35,7 +35,7 @@ if [ ! -f $p_hosts_file ]; then
 fi
 set +e
 
-v_tmp_yaml=${TMPDIR}/$(basename $p_yaml)
+v_tmp_yaml=${TMPDIR}/${sc_name2}-$(basename $p_yaml)
 sh -xc "cp ${p_yaml} ${v_tmp_yaml}"
 echo
 sed -i "s/^  hosts:.*/  hosts: $p_host/" ${v_tmp_yaml}
