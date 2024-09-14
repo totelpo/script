@@ -21,7 +21,7 @@ ssh -o BatchMode=yes -o ConnectTimeout=5 ${IP} 'exit'
 if [ $? -eq 0 ]; then
   echo "Passwordless SSH is already working!"
 else
-  echo "Passwordless SSH is NOT working. We will proceed to for its setup."
+  echo "Passwordless SSH is NOT working. We will proceed for its setup."
 
     set -e
     echo; sh -xc "ssh-keygen -f ${HOME}/.ssh/known_hosts -R ${IP}"
