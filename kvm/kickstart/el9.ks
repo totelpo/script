@@ -19,10 +19,9 @@ network --device enp1s0 --bootproto static --ip 192.168.122.90 --noipv6 --netmas
 cdrom
 
 %packages
-@^server-product-environment
+@^minimal-environment
 kexec-tools
 chrony
-kexec-tools
 bind-utils
 net-tools
 nfs-utils
