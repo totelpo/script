@@ -90,6 +90,15 @@
         dest: "/var/cache/dnf"         # Replace with the desired symlink path
         state: link
 
+-
+  name: EL8 Template Additional packages
+  hosts: el8-090
+  tasks:
+    - name: Ensure rsync client packages are installed
+      ansible.builtin.dnf:
+        name: rsync
+        state: present
+
     - name: Execute shell commands
       command: chdir=/tmp/ {{ item }}
       with_items:
