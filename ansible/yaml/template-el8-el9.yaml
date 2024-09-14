@@ -1,0 +1,101 @@
+-
+  name: el8-or-el9 Template
+  hosts: server-host
+  tasks:
+    - name: Disable SELinux
+      ansible.posix.selinux:
+        policy: targeted
+        state: permissive
+
+    - name: Start Firewalld service
+      systemd:
+        state: started
+        name: firewalld
+
+    - name: Firewall for mysqld service
+      ansible.posix.firewalld:
+        service: mysql
+        permanent: yes
+        immediate: yes
+        state: enabled
+
+-
+  name: NFS settings
+  hosts: server-host
+  tasks:
+    - name: Check if the mount point exists
+      ansible.builtin.stat:
+        path: /nfs  # Replace with the actual mount point path
+      register: mount_point_stat
+
+    - name: Ensure NFS client packages are installed
+      ansible.builtin.yum:
+        name: nfs-utils
+        state: present
+      when: not (mount_point_stat.stat.exists and mount_point_stat.stat.isdir)
+
+    - name: Ensure NFS service(nfs-client.target) is enabled and started
+      ansible.builtin.systemd:
+        name: nfs-client.target
+        enabled: yes
+        state: started
+      when: not (mount_point_stat.stat.exists and mount_point_stat.stat.isdir)
+
+    - name: Mount an NFS volume
+      ansible.posix.mount:
+        src: 192.168.122.1:/nfs
+        path: /nfs
+        opts: rw,sync,hard
+        state: mounted
+        fstype: nfs
+      when: not (mount_point_stat.stat.exists and mount_point_stat.stat.isdir)
+
+-
+  name: DNF settings
+  hosts: server-host
+  tasks:
+    - name: Check if the OS is RHEL-based and version 8 or higher
+      ansible.builtin.assert:
+        that:
+          - ansible_facts['os_family'] == 'RedHat'
+          - ansible_facts['distribution_major_version'] | int >= 8
+        fail_msg: "This task is only for RHEL-based systems with a version 8 or higher."
+
+    - name: DNF keep cache
+      ansible.builtin.lineinfile:
+        path: /etc/dnf/dnf.conf
+        regexp: '^keepcache='
+        line: keepcache=1
+
+    - name: Check if folder /var/cache/dnf is a symlink
+      ansible.builtin.stat:
+        path: /var/cache/dnf  # Replace with the actual folder path
+      register: folder_stat
+
+    - name: Remove folder /var/cache/dnf if it is not a symlink
+      ansible.builtin.file:
+        path: /var/cache/dnf  # Replace with the actual folder path
+        state: absent
+      when: folder_stat.stat.islnk == False
+
+    - name: Ensure the source folder(/nfs/yum-repo/el8-or-el9) exists
+      ansible.builtin.file:
+        path: "/nfs/yum-repo/el8-or-el9"  # Replace with the actual folder path
+        state: directory
+        mode: '0755'  # Optional: Set the desired permissions for the folder
+
+    - name: Create symlink /var/cache/dnf
+      ansible.builtin.file:
+        src: "/nfs/yum-repo/el8-or-el9"          # Replace with the actual target path
+        dest: "/var/cache/dnf"         # Replace with the desired symlink path
+        state: link
+
+-
+  name: Install additional packages
+  hosts: server-host
+  tasks:
+    - name: Ensure rsync client packages are installed
+      ansible.builtin.dnf:
+        name: rsync
+        state: present
+
