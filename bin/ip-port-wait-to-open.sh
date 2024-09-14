@@ -25,7 +25,7 @@ v_timeout=$((WAIT_MINUTE*60))
 v_timeout1=0
 v_sleep=20
 
-echo -e "\nWaiting for ${IP} port ${PORT} to open. Check interval is ${v_sleep} seconds. WAIT_MINUTE=${WAIT_MINUTE}" 
+echo -e "\nWaiting for ${IP} port ${PORT} to open. Check interval is ${v_sleep} seconds. Max WAIT_MINUTE=${WAIT_MINUTE}" 
 until nc -zv ${IP} ${PORT} 2> /dev/null; do
   printf "."
   sleep $v_sleep
