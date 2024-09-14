@@ -5,10 +5,9 @@ text
 repo --name="AppStream" --baseurl=file:///run/install/sources/mount-0000-cdrom/AppStream
 
 %packages
-@^server-product-environment
+@^minimal-environment
 kexec-tools
 chrony
-kexec-tools
 bind-utils
 net-tools
 nfs-utils
