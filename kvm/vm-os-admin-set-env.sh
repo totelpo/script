@@ -59,11 +59,11 @@ if [ ! -z "${IP}" ]; then
         create: yes  # Create the file if it doesn't exist
         state: present
 
-    - name: Update SCRIPT_DIR variable value in ${v_filename}
+    - name: Update HOME variable value in ${v_filename}
       replace:
         path: ${v_dest}
-        regexp: '^SCRIPT_DIR=.*$'
-        replace: 'SCRIPT_DIR=/home/${VM_OS_ADMIN}/script'
+        regexp: '^HOME=.*$'
+        replace: 'HOME=/home/${VM_OS_ADMIN}'
 EOF
 
   sh -xc "ansible-playbook ${sc_tmp}.yaml"
