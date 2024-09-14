@@ -110,11 +110,11 @@ f-exec-temp-script $sc_tmp-${OS}.sh.virt-install
 EOF
   if [ ! "${KS}" = "no" ]; then
     cat << EOF
-VM=${VM} WAIT_MINUTE=9 vm-start-after-auto-stop.sh
+VM=${VM} WAIT_MINUTE=9 check-auto-shutdown-then-start.sh
 EOF
   fi
   cat << EOF
-IP=${IP}  PORT=22  WAIT_MINUTE=9  ip-port-wait-to-open.sh
+IP=${IP}  PORT=22  WAIT_MINUTE=9  check-port-wait-to-open.sh
 
 # OS=${OS} IP=${IP} passwordless-ssh.sh
 f-marker "Clear old entries for ${IP} on ~/.ssh/known_hosts"
@@ -126,6 +126,9 @@ ssh -o 'StrictHostKeyChecking=no' ${IP} "sudo less /var/log/anaconda/anaconda.lo
 vm-arp-clear-unreachable-ip.sh
 
 set +e
+echo "
+Setup of ${OS} ${VM} is now complete.
+"
 )
 EOF
   ) > $sc_tmp-${OS}.sh
