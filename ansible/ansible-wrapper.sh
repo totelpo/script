@@ -16,27 +16,28 @@ ls *.yaml | head
 exit
 }
 
-if [ $# -lt 2 ]; then
+HOSTS_FILE=${HOSTS_FILE:=/etc/ansible/hosts} # default value
+
+f-marker $sc_name1 $(basename ${YAML})
+
+if [ ! -z "${YAML}" -a ! -z "${ANSIBLE_HOST}" ]; then # if required variables are not empty
+  MARKER_WIDTH=105 f-marker $sc_name1 YAML=$(basename ${YAML}) ANSIBLE_HOST=$(basename ${ANSIBLE_HOST})
+else
 	f_use
 fi
 
-p_yaml="$1"; p_yaml=${p_yaml:=el7-ps57-install.yaml} # default value
-p_host="$2"; p_host=${p_host:=c7n77} # default value
-p_hosts_file="$3"; p_hosts_file=${p_hosts_file:=/etc/ansible/hosts} # default value
-
-f-marker $sc_name1 $(basename ${p_yaml})
-
 set -e
-if [ ! -f $p_yaml ]; then
-	ls -lh $p_yaml
+if [ ! -f ${YAML} ]; then
+	ls -lh ${YAML}
 fi
-if [ ! -f $p_hosts_file ]; then
-	ls -lh $p_hosts_file
+if [ ! -f ${HOSTS_FILE} ]; then
+	ls -lh ${HOSTS_FILE}
 fi
 set +e
 
-v_tmp_yaml=${TMPDIR}/${sc_name2}-$(basename $p_yaml)
-sh -xc "cp ${p_yaml} ${v_tmp_yaml}"
+v_tmp_yaml=${TMPDIR}/${sc_name2}-$(basename ${YAML})
+sh -xc "cp ${YAML} ${v_tmp_yaml}"
 echo
-sed -i "s/^  hosts:.*/  hosts: $p_host/" ${v_tmp_yaml}
-sh -xc "ansible-playbook ${v_tmp_yaml} -i $p_hosts_file --become"
+sed -i "s/^  hosts:.*/  hosts: ${ANSIBLE_HOST}/" ${v_tmp_yaml}
+sh -xc "ansible-playbook ${v_tmp_yaml} -i ${HOSTS_FILE} --become"
+
