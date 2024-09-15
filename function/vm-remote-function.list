@@ -2,3 +2,5 @@
 # Use by vm-copy-scripts.sh
 f-marker.sh
 f-message.sh 
+f-os-get-family.sh
+f-os-get-major-version.sh
