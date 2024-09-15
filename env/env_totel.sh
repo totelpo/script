@@ -19,6 +19,8 @@ if [ -z "${TMPDIR}" ]; then # Check if variable is empty
   fi
 fi
 export PATH PATH_ORIG PATH_MISC TMPDIR GITHUB_DIR SCRIPT_DIR 
+EXEC=n
+export EXEC
 
 ENV_DIR=${SCRIPT_DIR}/env
 FUNCTION_DIR=${SCRIPT_DIR}/function
@@ -34,7 +36,8 @@ VM_KEY_FILE=${HOME}/.ssh/${VM_KEY}
 export VM_OS_ADMIN VM_OS_ADMIN_PASS VM_DOMAIN VM_KEY VM_KEY_FILE 
 
 ANSIBLE_HOSTS_FILE=/etc/ansible/hosts
-export ANSIBLE_HOSTS_FILE
+ANSIBLE_YAML_DIR=${SCRIPT_DIR}/ansible/yaml
+export ANSIBLE_HOSTS_FILE ANSIBLE_YAML_DIR
 
 export MY_CNF_KVM=${CONF_DIR}/kvm-my.cnf
 
