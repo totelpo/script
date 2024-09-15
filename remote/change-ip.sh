@@ -9,36 +9,25 @@ source ${ENV_DIR}/env_script.sh
 f_use(){
   echo "
 USAGE :
-OS=el9  NEW_IP=192.168.122.91 $sc_name1 
+LOGFILE=/tmp/${sc_name2}.log OS=el9  NEW_IP=192.168.122.91 $sc_name1 
 "
   exit
 }
+
+LOGFILE="${LOGFILE:=${sc_tmp}.log}"
 
 if [ ! -z "${OS}" -a ! -z "${NEW_IP}" ]; then # if required variables are not empty
   f-marker $sc_name1 ${OS} NEW_IP=${NEW_IP}
   set -e; check-os-support.sh; set +e
 
-  v_dev="`ip a | grep -v '^ ' | grep -v ' lo:' | head -1 | awk '{ print $2 }' | sed 's/://'`"
+ #v_dev="`ip a | grep -v '^ ' | grep -v ' lo:' | head -1 | awk '{ print $2 }' | sed 's/://'`"
+ v_dev=$(ip -o link show | awk -F': ' '{print $2}' | sed -n '2p')
   v_old_ip="`ip -4 addr show  dev ${v_dev} | grep inet | awk '{ print $2 }' | cut -d'/' -f1`"
 
-  f_check_ip(){
-    f-marker ${FUNCNAME[0]}
-    echo "${NEW_IP}" | grep 192.168.122
-    if [ $? -gt 0 ]; then
-      echo "Invalid IP ${NEW_IP} . IP must be 192.168.122.X"
-      exit 1
-    fi
-    if [ "$v_old_ip" = "${NEW_IP}" -o "${NEW_IP}" = "0" ]; then
-      echo -e "\nNo IP changed. Old and new IP are the same.\n"
-      exit
-    fi
-    ping -c 1 ${NEW_IP} > /dev/null
-    if [ $? -eq 0 ]; then 
-      echo "\nIP conflict for ${NEW_IP}\n" 
-      exit 1
-    fi
-  }
-  f_check_ip
+  if [ -z "${v_dev}" ]; then
+    echo "No device found. v_dev=${v_dev}."
+    exit 1
+  fi
 
   f_change_ip_network_scripts(){
     f-marker ${FUNCNAME[0]}
@@ -55,13 +44,10 @@ if [ ! -z "${OS}" -a ! -z "${NEW_IP}" ]; then # if required variables are not em
 ;s/^IPADDR=.*/IPADDR=${NEW_IP}/
 ;s/^NETMASK=.*/NETMASK=255.255.255.0/
 " $v_cfg
-    set +e
-    f-umount-all-nfs
-    set -e
-          ifdown ${v_dev}
-          ifup   ${v_dev}
+
+    ifdown ${v_dev}
+    ifup   ${v_dev}
     sleep 5
-    mount -a
   }
   
   f_change_ip_networkd(){
@@ -147,26 +133,36 @@ arp -en
     fi
   }
 
-  echo -e "\n# Logging to : ${sc_tmp}.log\n"
-  set -e
+  echo -e "\n# Logging to : ${LOGFILE}\n"
+
   (
+  f-check-ip
+  
+  set +e
+  f-umount-all-nfs
+  set -e
+
   if   [ "${OS}" = "el7" -o "${OS}" = "el8" -o "${OS}" = "el9" ]; then
     f-change-ip-nmcli
+    f-info-nmcli
   elif [ "${OS}" = "el5" -o "${OS}" = "el6" ]; then
     f_change_ip_network_scripts
+    f-info-ifcfg
   elif [ "${OS}" = "u20"   -o "${OS}" = "u22" ]; then
     f_change_ip_networkd
   elif [ "${OS}" = "u16" ]; then
     f_change_ip_networking
   fi
-  f-marker "Gather Info 2"
-  echo "
-ip -4 addr show  dev ${v_dev}
-lshw -class network -short
-" | sh -x
+
   echo
   f-check-ping
-  ) 2>&1 &> ${sc_tmp}.log
+  f-marker "Mount all unmounted NFS"
+  sudo bash -xc "mount -t nfs -a"
+  echo
+  bash -xc "df -t nfs4 -h"
+  f-info-ip
+  ) 2>&1 &> ${LOGFILE}
+
 else
   f_use
 fi
