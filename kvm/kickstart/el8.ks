@@ -8,12 +8,6 @@ repo --name="AppStream" --baseurl=file:///run/install/sources/mount-0000-cdrom/A
 @^minimal-environment
 kexec-tools
 chrony
-bind-utils
-net-tools
-nfs-utils
-wget
-nmap
-mlocate
 
 %end
 
