@@ -14,21 +14,33 @@ cat << EOF > /etc/sudoers.d/admin
 totel ALL=NOPASSWD: /usr/sbin/arp
 EOF
 
-/ 3 | ssh
+/ 3 | Download ISO
+Visit https://yum.oracle.com/oracle-linux-isos.html
+
+cd /iso/ol/
+wget -c https://yum.oracle.com/ISOS/OracleLinux/OL9/u4/x86_64/OracleLinux-R9-U4-x86_64-dvd.iso
+wget -c https://yum.oracle.com/ISOS/OracleLinux/OL8/u10/x86_64/OracleLinux-R8-U10-x86_64-dvd.iso
+wget -c https://yum.oracle.com/ISOS/OracleLinux/OL7/u9/x86_64/OracleLinux-R7-U9-Server-x86_64-dvd.iso
+wget -c https://yum.oracle.com/ISOS/OracleLinux/OL6/u10/x86_64/OracleLinux-R6-U10-Server-x86_64-dvd.iso
+
+
+/ 4 | Environment variables
+vi ${GITHUB_DIR}/script/env/env_totel.sh
+
+/ 5 | ssh
 cat << EOF > ~/.ssh/config
 Host 192.168.122.*
     User ${VM_OS_ADMIN}
     IdentityFile ~/.ssh/id_rsa_kvm
 EOF
 
-/ 4 | NFS
+/ 6 | NFS
 See ${GITHUB_DIR}/demo/ubuntu/nfs-u22.txt
 
-/ 5 | ansible
+/ 7 | ansible
 See ${GITHUB_DIR}/demo/ansible/010-ansible-on-u22.txt
 
-/ 5 | expect
+/ 8 | expect
 See ${GITHUB_DIR}/demo/ubuntu/expect-u22.txt
 sudo apt install expect
-
 
