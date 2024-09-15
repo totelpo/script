@@ -37,7 +37,9 @@ cat << EOF > $sc_tmp.yaml
     - name: Ensure the hostname persists across reboots (for RHEL 7/8/9)
       ansible.builtin.command:
         cmd: hostnamectl set-hostname ${NEW_HOSTNAME}
-      when: ansible_facts['os_family'] == 'RedHat'
+      when: 
+        - ansible_facts['os_family'] == 'RedHat'
+        - ansible_facts['distribution_major_version'] | int >= 7
 
     - name: Update /etc/hosts file with the new hostname
       ansible.builtin.lineinfile:
