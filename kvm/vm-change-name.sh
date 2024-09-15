@@ -8,55 +8,56 @@ f_use() {
 # USAGE: 
 	echo "
 USAGE :
-EXEC=y $sc_name1 VM_OLD  VM_NEW
-EXEC=y $sc_name1 el9-090 el9-091
+EXEC=y VM_OLD=el9-090 VM_NEW=el9-091 $sc_name1
 " | sed "s|$HOME|~|g"
-	exit
+	exit 1
 }
 
-if [ $# -eq 2 ]; then
-	f-marker $sc_name1 $@
+if [ ! -z "${VM_OLD}" -a ! -z "${VM_NEW}" ]; then # if required variables are not empty
+  f-marker $sc_name1 $@
 else
+  echo "
+FAILED: Empty variables found.
+VM_OLD=${VM_OLD}
+VM_NEW=${VM_NEW}
+"
 	f_use
 fi
 
-p_old_vm="$1"
-p_new_vm="$2"
-
 set -e
-virsh dumpxml ${p_old_vm} > ${sc_tmp}.xml
+virsh dumpxml ${VM_OLD} > ${sc_tmp}.xml
 
-v_img1=`virsh domblklist ${p_old_vm} --details | grep 'file' | head -1 | awk '{ print $NF }'`
+v_img1=`virsh domblklist ${VM_OLD} --details | grep 'file' | head -1 | awk '{ print $NF }'`
 	#v_img1=`cat ${sc_tmp}.root.img | awk -F"'" '{ print $2 }'`
 v_old_vm_dir=`dirname $v_img1`
-v_new_vm_dir=`echo $v_old_vm_dir | sed "s/${p_old_vm}/$p_new_vm/g"`
+v_new_vm_dir=`echo $v_old_vm_dir | sed "s/${VM_OLD}/${VM_NEW}/g"`
 set +e
 
 # Check old and new value
-if [ "${p_old_vm}" = "${p_new_vm}" ]; then
-  echo -e "\nOld name(${p_old_vm}) and New name(${p_old_vm}) are the same.\n"
+if [ "${VM_OLD}" = "${VM_NEW}" ]; then
+  echo -e "\nOld name(${VM_OLD}) and New name(${VM_OLD}) are the same.\n"
   exit 1
 fi
 f-check-if-dir-exists ${v_new_vm_dir}
-f-check-if-vm-exists  ${p_new_vm}
+f-check-if-vm-exists  ${VM_NEW}
 
 cat << EOF > ${sc_tmp}.sh
 (
-if (virsh list --all | grep ${p_old_vm} | grep running); then   # destroy if VM is running
-  virsh destroy ${p_old_vm}
+if (virsh list --all | grep ${VM_OLD} | grep running); then   # destroy if VM is running
+  virsh destroy ${VM_OLD}
 fi
 set -e
-virsh undefine ${p_old_vm}
+virsh undefine ${VM_OLD}
 mv -nv $v_old_vm_dir $v_new_vm_dir
-sed -i "s|${p_old_vm}|$p_new_vm|g" ${sc_tmp}.xml
-grep $p_new_vm  ${sc_tmp}.xml
+sed -i "s|${VM_OLD}|${VM_NEW}|g" ${sc_tmp}.xml
+grep ${VM_NEW}  ${sc_tmp}.xml
 virsh define ${sc_tmp}.xml
-virsh start $p_new_vm
+virsh start ${VM_NEW}
 ls -lh ${sc_tmp}.xml
 )
 EOF
 if [ "${EXEC}" = "y" ]; then
   bash -x ${sc_tmp}.sh
 else
-  echo -e "\nbash -x ${sc_tmp}.sh\n"
+  echo -e "\nManually execute :\nbash -x ${sc_tmp}.sh\n"
 fi
