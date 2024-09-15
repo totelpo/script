@@ -1,4 +1,6 @@
 #!/bin/bash
+# Called by : vm-template.sh
+
 sc_name=$0
 source ${ENV_DIR}/env_function.sh
 source ${ENV_DIR}/env_script.sh
@@ -24,10 +26,10 @@ echo
 EXEC=y $sc_name1
 
 # or
-EXEC=y VM=el9-090 OS=el9 KS=el9.ks PROTO=static IP=192.168.122.90 DISK_GB=20 RAM_GB=2 CPU=2 $sc_name1
 EXEC=y VM=el9-090 OS=el9 KS=no     PROTO=static IP=192.168.122.90 DISK_GB=20 RAM_GB=2 CPU=2 $sc_name1
+EXEC=y VM=el9-090 OS=el9 KS=el9.ks PROTO=static IP=192.168.122.90 DISK_GB=20 RAM_GB=2 CPU=2 $sc_name1
 EXEC=y VM=el8-080 OS=el8 KS=el8.ks PROTO=static IP=192.168.122.80 DISK_GB=20 RAM_GB=2 CPU=2 $sc_name1
-EXEC=y VM=el8-080 OS=el8 KS=no     PROTO=static IP=192.168.122.80 DISK_GB=20 RAM_GB=2 CPU=2 $sc_name1
+EXEC=y VM=el7-070 OS=el7 KS=el7.ks PROTO=static IP=192.168.122.70 DISK_GB=20 RAM_GB=2 CPU=2 $sc_name1
 EOF
 exit
 }
@@ -50,14 +52,17 @@ if [ ! -z "${VM}" -a ! -z "${IP}" ]; then
     set +e
   fi
   mkdir -p ${v_dir}
-  if   [ "${OS}" = "el8" ]; then
+  if   [ "${OS}" = "el7" ]; then
+    ISO_FILE=${ISO_FILE:=/iso/ol/OracleLinux-R7-U9-Server-x86_64-dvd.iso}
+    OS_VARIANT=${OS_VARIANT:=ol7.9} # --osinfo detect=on,require=off \\ # osinfo-query os | cut -c -`tput cols` | grep -i oracle
+    NETDEV=${NETDEV:=eth0}  # f-el-kickstart-update
+   elif [ "${OS}" = "el8" ]; then
     ISO_FILE=${ISO_FILE:=/iso/ol/OracleLinux-R8-U10-x86_64-dvd.iso}
-    OS_VARIANT=${OS_VARIANT:=ol8.10}
-    # --osinfo detect=on,require=off \\ # osinfo-query os | cut -c -`tput cols` | grep -i oracle
+    OS_VARIANT=${OS_VARIANT:=ol8.10} # --osinfo detect=on,require=off \\ # osinfo-query os | cut -c -`tput cols` | grep -i oracle
     NETDEV=${NETDEV:=enp1s0}  # f-el-kickstart-update
   elif [ "${OS}" = "el9" ]; then
     ISO_FILE=${ISO_FILE:=/iso/ol/OracleLinux-R9-U4-x86_64-dvd.iso}
-    OS_VARIANT=${OS_VARIANT:=ol9.4}
+    OS_VARIANT=${OS_VARIANT:=ol9.4} # --osinfo detect=on,require=off \\ # osinfo-query os | cut -c -`tput cols` | grep -i oracle
     NETDEV=${NETDEV:=enp1s0}    # f-el-kickstart-update
   else
     echo "Unsupported value OS=${OS}."
@@ -108,20 +113,27 @@ set -e
 f-exec-temp-script $sc_tmp-${OS}.sh.virt-install
 
 EOF
+
   if [ ! "${KS}" = "no" ]; then
     cat << EOF
 VM=${VM} WAIT_MINUTE=9 check-auto-shutdown-then-start.sh
+IP=${IP}
+EOF
+  else
+    cat << EOF
+VM=${VM} WAIT_MINUTE=6 f-ip-wait-kvm-to-acquire; IP=\${r_ip}
 EOF
   fi
-  cat << EOF
-IP=${IP}  PORT=22  WAIT_MINUTE=9  check-port-wait-to-open.sh
 
-# OS=${OS} IP=${IP} passwordless-ssh.sh
-f-marker "Clear old entries for ${IP} on ~/.ssh/known_hosts"
-echo; sh -xc "ssh-keygen -f ${HOME}/.ssh/known_hosts -R ${IP}"
+  cat << EOF
+IP=\${IP}  PORT=22  WAIT_MINUTE=9  check-port-wait-to-open.sh
+
+# OS=${OS} IP=\${IP} passwordless-ssh.sh
+f-marker "Clear old entries for \${IP} on ~/.ssh/known_hosts"
+echo; sh -xc "ssh-keygen -f ${HOME}/.ssh/known_hosts -R \${IP}"
 
 f-marker "Check anaconda.log for OS install start and finish"
-ssh -o 'StrictHostKeyChecking=no' ${IP} "sudo less /var/log/anaconda/anaconda.log | sed -n '1p; \\\$p'"
+ssh -o 'StrictHostKeyChecking=no' \${IP} "sudo less /var/log/anaconda/anaconda.log | sed -n '1p; \\\$p'"
 
 vm-arp-clear-unreachable-ip.sh
 
