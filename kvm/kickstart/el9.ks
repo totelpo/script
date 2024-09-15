@@ -22,12 +22,6 @@ cdrom
 @^minimal-environment
 kexec-tools
 chrony
-bind-utils
-net-tools
-nfs-utils
-wget
-nmap
-mlocate
 
 %end
 
