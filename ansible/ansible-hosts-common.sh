@@ -23,10 +23,9 @@ ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 [vms]
 EOF
 
-for i_last in {2..254}; do
+for i_last in {2..2}; do
   i_pad=`printf "%03d" ${i_last}`
   echo "s${i_pad} ansible_host=192.168.122.${i_last}"
 done | column -t -o' '
-
 echo
-) | less
+)
