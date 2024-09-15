@@ -9,16 +9,16 @@ f_use(){
  DESC: Change server hostname
 USAGE:"
   cat << EOF | column -t
-OS=el9 HOST=s090 NEW_HOSTNAME=el9-090-s1 $sc_name1
+OS=el9 ANSIBLE_HOST=s090 NEW_HOSTNAME=el9-090-s1 $sc_name1
 EOF
 exit 1
 }
 
-if [ ! -z "${OS}" -a ! -z "${HOST}" -a ! -z "${NEW_HOSTNAME}" ]; then # if required variables are not empty
-  f-marker $sc_name1 ${OS} ${HOST} ${NEW_HOSTNAME}
+if [ ! -z "${OS}" -a ! -z "${ANSIBLE_HOST}" -a ! -z "${NEW_HOSTNAME}" ]; then # if required variables are not empty
+  f-marker $sc_name1 ${OS} ${ANSIBLE_HOST} ${NEW_HOSTNAME}
 else
   # Ensure required variables are not empty (that is already declared in bashrc).
-  echo -e "\nFAILED: Empty variables found.\nOS=${OS} | HOST=${HOST} | NEW_HOSTNAME=${NEW_HOSTNAME}"
+  echo -e "\nFAILED: Empty variables found.\nOS=${OS} | ANSIBLE_HOST=${ANSIBLE_HOST} | NEW_HOSTNAME=${NEW_HOSTNAME}"
   f_use
 fi
 
@@ -28,7 +28,7 @@ check-os-support.sh
 cat << EOF > $sc_tmp.yaml
 ---
 - name: Change hostname on RHEL server
-  hosts: ${HOST}
+  hosts: ${ANSIBLE_HOST}
   tasks:
     - name: Set the system hostname
       ansible.builtin.hostname:
