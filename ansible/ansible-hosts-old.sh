@@ -19,6 +19,12 @@ f-marker $sc_name1 $@
 v_conf=${ANSIBLE_HOSTS_FILE}.old
 (
 ansible-hosts-common.sh
+
+for i_last in {3..254}; do
+  i_pad=`printf "%03d" ${i_last}`
+  echo "s${i_pad} ansible_host=192.168.122.${i_last}"
+done | column -t -o' '
+
 cat << EOF
 
 [template]
