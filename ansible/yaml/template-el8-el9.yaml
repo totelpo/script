@@ -94,8 +94,8 @@
   name: Install additional packages
   hosts: server-host
   tasks:
-    - name: Ensure rsync client packages are installed
-      ansible.builtin.dnf:
-        name: rsync
+    - name: DNF install
+      ansible.builtin.yum:
+        name: rsync bind-utils net-tools nfs-utils wget nmap mlocate
         state: present
 
