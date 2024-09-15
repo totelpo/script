@@ -3,7 +3,7 @@
 
 if [ ! -z "${OS}" ]; then
 case ${OS} in
-  el8|el9)
+  el7|el8|el9)
     echo "${OS} is in the list." > /dev/null
     ;;
   u22|u24)
