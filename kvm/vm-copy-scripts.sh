@@ -19,6 +19,7 @@ exit
 
 if [ ! -z "${IP}" ]; then
   f-marker $sc_name1 $p_all_input_parameters
+  f-check-if-ip-is-reachable
 else
   f_use
 fi
