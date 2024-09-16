@@ -1,0 +1,32 @@
+-
+  name: Gather and display OS information with loop(Remommended)
+  hosts: localhost
+  gather_facts: yes
+  become: no
+  tasks:
+    - name: Set OS information as facts
+      set_fact:
+        os_info:
+          - { key: 'OS Family', value: "{{ ansible_facts['os_family'] }}" }
+          - { key: 'Distribution Major Version', value: "{{ ansible_facts['distribution_major_version'] }}" }
+
+    - name: Display OS information
+      debug:
+        msg: "{{ item.key }}: {{ item.value }}"
+      loop: "{{ os_info }}"
+
+-
+  name: Gather and display OS information
+  hosts: localhost
+  connection: local
+  gather_facts: yes  # Ensure that Ansible gathers facts
+  become: no
+  tasks:
+    - name: Display OS family
+      debug:
+        var: ansible_facts['os_family']
+
+    - name: Display distribution major version
+      debug:
+        var: ansible_facts['distribution_major_version']
+
