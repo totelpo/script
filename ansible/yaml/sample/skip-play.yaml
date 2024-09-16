@@ -1,0 +1,18 @@
+# https://chatgpt.com/c/66e789bd-9308-8001-94b8-5ffa492d341e
+---
+- name: Skip play for RHEL 7 and below
+  hosts: localhost
+  gather_facts: yes
+  tasks:
+    - name: Determine if we should run this play
+      set_fact:
+        skip_play: "{{ ansible_facts['os_family'] == 'RedHat' and (ansible_facts['distribution_major_version'] | int <= 7) }}"
+
+    - name: Skip the following tasks if OS is RHEL 7 or below
+      meta: end_play
+      when: skip_play
+
+    - name: Continue with the playbook 
+      debug:
+        msg: "This is a RHEL-based system with major version greater than 7. Continuing the playbook..."
+
