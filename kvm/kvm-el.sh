@@ -38,7 +38,7 @@ if [ "$1" = "h" ]; then f_use; fi
 CHECK="${CHECK:=y}"
 
 if [ ! -z "${VM}" -a ! -z "${IP}" ]; then
-  MARKER_WIDTH=105 f-marker $sc_name1 OS=${OS} VM=${VM} IP=${IP}
+  MARKER_WIDTH=${COLUMNS} f-marker $sc_name1 OS=${OS} VM=${VM} IP=${IP}
   v_dir=${KVM_DIR}/${VM}
   if [ "${CHECK}" = "y" ]; then
     set -e # needed to exit if the check script fails
