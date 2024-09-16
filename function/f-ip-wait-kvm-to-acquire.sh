@@ -5,9 +5,9 @@ f-ip-wait-kvm-to-acquire(){
     echo -e "\nWaiting for ${VM} to startup and acquire an IP address. WAIT_MINUTE=${WAIT_MINUTE} " 
     v_timeout0=0
     v_sleep=5
-    VM=${VM}   f-get-kvm-ip; v_ip=$r_ip
+    VM=${VM}   f-get-kvm-ip > /dev/null; v_ip=$r_ip
     while [ "$v_ip" = "" ]; do
-      VM=${VM} f-get-kvm-ip; v_ip=$r_ip
+      VM=${VM} f-get-kvm-ip > /dev/null; v_ip=$r_ip
       printf "."
       sleep $v_sleep
       v_timeout0=$((v_timeout0+v_sleep))
