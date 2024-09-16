@@ -21,7 +21,7 @@ exit 1
 #IP="${IP:=192.168.122.90}"
 
 if [ ! -z "${VM}" -a ! -z "${IP}" ]; then # if required variables are not empty
-  MARKER_WIDTH=105 f-marker $sc_name1 VM=${VM} IP=${IP}  # MARKER_WIDTH=105 for main script; MARKER_WIDTH=100(default) for minor script
+  MARKER_WIDTH=${COLUMNS} f-marker VM=${VM} IP=${IP} $sc_name1
   set -e; check-os-support.sh; set +e
 else
   # Ensure required variables are defined
