@@ -1,0 +1,24 @@
+---
+- name: Check OS version and fail if RHEL major version is 7 or below
+  hosts: localhost
+  gather_facts: yes
+  tasks:
+    - name: Fail if RHEL major version is 7 or below
+      fail:
+        msg: "The OS is RHEL with a major version of {{ ansible_facts['distribution_major_version'] }}. This playbook requires RHEL major version greater than 7."
+      when: 
+        - ansible_facts['os_family'] == 'RedHat'
+        - ansible_facts['distribution_major_version'] | int <= 7
+    
+    - name: Continue with the playbook 
+      debug:
+        msg: "This is a RHEL-based system with major version greater than 7. Continuing the playbook..."
+
+- name: play2
+  hosts: all
+  tasks:
+    - name: Continue with the playbook
+      debug:
+        msg: "This is a RHEL-based system with major version greater than 7. Continuing the playbook..."
+
+
