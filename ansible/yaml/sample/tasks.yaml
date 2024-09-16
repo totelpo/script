@@ -1,0 +1,10 @@
+# this will only contain TASKS and not PLAY
+# called by skip-tasks-yaml.yaml
+    - name: This is task1
+      debug:
+        msg: "This is task1"
+
+    - name: This is task2
+      debug:
+        msg: "This is task2"
+
