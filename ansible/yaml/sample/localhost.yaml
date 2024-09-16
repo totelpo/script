@@ -18,7 +18,6 @@
 -
   name: Gather and display OS information
   hosts: localhost
-  connection: local
   gather_facts: yes  # Ensure that Ansible gathers facts
   become: no
   tasks:
