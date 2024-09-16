@@ -1,28 +1,36 @@
 #!/bin/bash
+# DESC: Run ansible script
+# totel 20220810 v1.0
+# totel 20240816 v2.0 Change input from Positional Parameters to Environment Variable Assignment (Inline Export)
 sc_name=$0
 source ${ENV_DIR}/env_function.sh
 source ${ENV_DIR}/env_script.sh
 
 f_use() {
-# DESC: totel 2022-08-10
-# USAGE: Run Asnible script 
-pwd
+  (
   echo "
-$sc_name1 YAML_FILE              ANSIBLE_HOST
-$sc_name1 el7-ps57-install.yaml  c7n77
-echo
-" | sed "s|$HOME|~|g"
-ls *.yaml | head
+# USAGE :
+cd ${ANSIBLE_YAML_DIR}/sample"
+cat << EOF 
+YAML=el-only-assert.yaml  ANSIBLE_HOST=s090      $sc_name1 
+YAML=el-only-fail.yaml    ANSIBLE_HOST=s090      $sc_name1 
+YAML=yum.yaml             ANSIBLE_HOST=s090      $sc_name1 
+YAML=localhost.yaml       ANSIBLE_HOST=localhost EXTRA_ARGS=' ' $sc_name1 
+EOF
+) | sed "s|$HOME|~|g"
 exit
 }
 
 HOSTS_FILE=${HOSTS_FILE:=/etc/ansible/hosts} # default value
-
-f-marker $sc_name1 $(basename ${YAML})
+EXTRA_ARGS=${EXTRA_ARGS:-"--become"} # default value
 
 if [ ! -z "${YAML}" -a ! -z "${ANSIBLE_HOST}" ]; then # if required variables are not empty
-  MARKER_WIDTH=105 f-marker $sc_name1 YAML=$(basename ${YAML}) ANSIBLE_HOST=$(basename ${ANSIBLE_HOST})
+  MARKER_WIDTH=105 f-marker $sc_name1 ${ANSIBLE_HOST} $(basename ${YAML})
 else
+    # Ensure required variables are defined
+  echo "
+FAILED: Empty variables found.
+ANSIBLE_HOST=${ANSIBLE_HOST} | YAML=${YAML} "
 	f_use
 fi
 
@@ -33,11 +41,18 @@ fi
 if [ ! -f ${HOSTS_FILE} ]; then
 	ls -lh ${HOSTS_FILE}
 fi
-set +e
 
-v_tmp_yaml=${TMPDIR}/${sc_name2}-$(basename ${YAML})
-sh -xc "cp ${YAML} ${v_tmp_yaml}"
+echo 
+for i_yaml in ${YAML} $(grep '^      include_tasks: ' ${YAML} | awk '{ print $NF }') 
+do
+  v_tmp_yaml=${TMPDIR}/aw-$(basename ${i_yaml})
+  sh -xc "cp ${i_yaml} ${v_tmp_yaml}"
+  bash -xc "sed -i 's/^  hosts:.*/  hosts: ${ANSIBLE_HOST}/' ${v_tmp_yaml}"
+done
+
 echo
-sed -i "s/^  hosts:.*/  hosts: ${ANSIBLE_HOST}/" ${v_tmp_yaml}
-sh -xc "ansible-playbook ${v_tmp_yaml} -i ${HOSTS_FILE} --become"
+sh -xc "
+cd ${TMPDIR}
+ansible-playbook aw-$(basename ${YAML}) -i ${HOSTS_FILE} ${EXTRA_ARGS}
+"
 
