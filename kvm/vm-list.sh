@@ -1,6 +1,11 @@
 #!/bin/bash
 
 # totel 20191113 on hp laptop centos 7.5.1804
+# totel 20240916 v2.0 Replace f_get_ip with function f-get-kvm-ip to get IP/s
+
+sc_name=$0
+source ${ENV_DIR}/env_function.sh
+source ${ENV_DIR}/env_script.sh
 
 p_grep="$1"; p_grep=${p_grep:='.'} # default value
 
@@ -20,26 +25,20 @@ COMMENT
 
 arp -an > $v_tmp.arp
 
-f_get_ip(){
-	v_ip=- ; v_mac=-
-	if [ "$3" = "running" ]; then
-		#v_mac=`virsh dumpxml $1 | grep "mac address" | head -1 | awk -F\' '{ print $2}'`
-		v_mac=`virsh domiflist $1 | awk '{ print $5 }' | grep . | sed '1d'`      ### another way of getting mac
-		v_ip=`grep "$v_mac" $v_tmp.arp | awk '{ print $2}' | sed 's/(//; s/)//' | tr -s '\n' ' '`
-	fi
-}
-
 v_cmd="virsh list --all"
 
 echo -e "\n# $v_cmd\n"
 eval $v_cmd | sed 's/shut off/shut-off/; /----/d' > $v_tmp
 (
-echo "`head -1 $v_tmp` | IP | CPU(s) | RAM"
-sed '1d' $v_tmp | egrep "$p_grep" | while read i; do
-	i_vm=`echo $i | awk '{ print $2 }'`
-	v_cpu_ram=`virsh dominfo $i_vm | grep -e 'CPU(s)' -e 'Used memory:' | awk -F':' '{ print $2 }' | tr -s ' ' | tr '\n' '|'`
-	f_get_ip $i
-	echo " $i | $v_ip | $v_cpu_ram"
+echo "`head -1 $v_tmp` | IP | CPU(s) | RAM | Disk usage "
+sed '1d' $v_tmp | egrep "$p_grep" | while read i_line; 
+do
+	v_vm=`echo ${i_line} | awk '{ print $2 }'`
+	v_cpu_ram=`virsh dominfo ${v_vm} | grep -e 'CPU(s)' -e 'Used memory:' | awk -F':' '{ print $2 }' | tr -s ' ' | tr '\n' '|' | sed 's/|$//'`
+  VM=${v_vm} f-get-kvm-ip > /dev/null
+  v_ip=${r_ip}
+  v_disk_usage=$(du -sh ${KVM_DIR}/${v_vm} | awk '{ print $1 }')
+  echo " ${i_line} | $v_ip | $v_cpu_ram | ${v_disk_usage}"
 done | sort -k2 
 ) | column -t -s'|' -o'|' | tee $v_out
 
