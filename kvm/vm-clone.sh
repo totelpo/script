@@ -1,4 +1,6 @@
 #!/bin/bash
+# totel 20240816 v2.0 Change input from Positional Parameters to Environment Variable Assignment (Inline Export)
+
 sc_name=$0
 source ${ENV_DIR}/env_function.sh
 source ${ENV_DIR}/env_script.sh
@@ -20,80 +22,76 @@ s=~/t/$sc_name2.s
 t=~/t/$sc_name2.t
 l=~/t/$sc_name2.l
 
-p_os="$1";   p_os=${p_os:=el7} # default value
-p_source_vm="$2";   p_source_vm=${p_source_vm:=centos7t} # default value
-p_clone_vm="$3" ; p_clone_vm=${p_clone_vm:=c7n71}           # default value
-p_clone_ip="$4" ; p_clone_ip=${p_clone_ip:=192.168.122.71}           # default value
+OS="$1";   OS=${OS:=el7} # default value
+VM_SOURCE="$2"; VM_SOURCE=${VM_SOURCE:=centos7t} # default value
+VM_CLONE="$3" ; VM_CLONE=${VM_CLONE:=c7n71}           # default value
+IP_CLONE="$4" ; IP_CLONE=${IP_CLONE:=192.168.122.71}           # default value
 
 if [ $# -eq 4 ]; then
   f-marker $sc_name1 $p_all_input_parameters
-  if [ "${p_source_vm}" = "${p_clone_vm}" ]; then
-    echo -e "\np_source_vm(${p_source_vm}) must NOT be same with p_clone_vm(${p_clone_vm})\n"
+  if [ "${VM_SOURCE}" = "${VM_CLONE}" ]; then
+    echo -e "\nVM_SOURCE(${VM_SOURCE}) must NOT be same with p_clone_vm(${VM_CLONE})\n"
     exit
   fi
 
-  f_change_hostname_ip(){
-    f-marker ${FUNCNAME[0]}
-    v_cmd="vm-change-hostname-ip-p1.sh $p_os ${p_clone_vm} ${p_clone_ip}"
-    echo -e "\nexecuting :\n ### $v_cmd ###"
-    eval "$v_cmd"
-  }
+  vm-list.sh "${VM_SOURCE}" | grep running && virsh destroy  ${VM_SOURCE}; 
 
-# f-check-if-similar-vm-id-exist  ${p_clone_vm}
-# f-check-if-similar-vm-exists-based-on-ip ${p_clone_ip}
-# f-check-if-ip-in-used           ${p_clone_ip}
-# f-check-if-kvm-ip-is-valid      ${p_clone_ip}
-  f_clone(){
-  
-    vm-list.sh "${p_source_vm}" | grep running && virsh destroy  ${p_source_vm}; 
-  
-    set -e   # enable  script exit-on-error and return an exit status you can check with $?
-  
-    virsh domblklist ${p_source_vm} | grep '.img' #| sed "s/${p_source_vm}/${p_clone_vm}/g" | awk '{ print "--file "$2 }'
-  
-    v_clone_files=$( virsh domblklist ${p_source_vm} | grep ${p_source_vm} | awk '{ print "--file "$2 }' | sed "s/${p_source_vm}/${p_clone_vm}/g" )
-    v_source_files=$(virsh domblklist ${p_source_vm} | grep ${p_source_vm} | awk '{ print "--file "$2 }' )
-    echo -e "$v_clone_files\n"
-    echo -e "$v_source_files\n"
-  
-    v_clone_dir=$(echo "$v_clone_files" | awk '{print $2}' | grep 'root.img' | sort -u | while read i; do dirname $i; done | sort | uniq )
-    #  v_clone_dir1=`echo "$v_clone_files" | awk '{print $2}' | grep "${p_clone_vm}.img" | sort -u | head -1 | while read i; do dirname $i; done`
-  
-    pwd
-    bash -xc "mkdir -p  $v_clone_dir"
-    
-    set +e
-    for i_dir in ${v_clone_dir}; do
-      f-check-if-dir-is-empty ${i_dir}
+  set -e   # enable  script exit-on-error and return an exit status you can check with $?
+ 
+  virsh domblklist ${VM_SOURCE} | grep '.img' #| sed "s/${VM_SOURCE}/${VM_CLONE}/g" | awk '{ print "--file "$2 }'
+ 
+  v_clone_files=$( virsh domblklist ${VM_SOURCE} | grep ${VM_SOURCE} | awk '{ print "--file "$2 }' | sed "s/${VM_SOURCE}/${VM_CLONE}/g" )
+  v_source_files=$(virsh domblklist ${VM_SOURCE} | grep ${VM_SOURCE} | awk '{ print "--file "$2 }' )
+  echo -e "$v_clone_files\n"
+  echo -e "$v_source_files\n"
+
+  v_clone_dirs=$(echo "$v_clone_files" | awk '{print $2}' | grep 'root.img' | sort -u | while read i; do dirname $i; done | sort | uniq )
+  #  v_clone_dirs1=`echo "$v_clone_files" | awk '{print $2}' | grep "${VM_CLONE}.img" | sort -u | head -1 | while read i; do dirname $i; done`
+
+  CHECK=${CHECK:=y}
+  if [ "${CHECK}" = "y" ]; then 
+    set -e
+    f-check-if-similar-vm-id-exist  ${VM_CLONE}
+    VM=${VM_CLONE} IP=${IP_CLONE} check-if-similar-vm-exists-based-on-ip.sh
+    IP=${IP_CLONE} check-if-ip-in-used.sh
+    IP=${IP_CLONE} check-if-kvm-ip-is-valid.sh 
+
+   for i_dir in ${v_clone_dirs}; do
+      DIR_NAME=${i_dir} check-if-dir-is-empty-or-not-exists.sh
     done
     unset i_dir
+  fi
+    set +e
 
     cat << EOF > $sc_tmp.sh
 virt-clone \\
   --connect qemu:///system \\
-  --original ${p_source_vm} \\
+  --original ${VM_SOURCE} \\
   --check disk_size=off \\
-  --name ${p_clone_vm} \\
+  --name ${VM_CLONE} \\
   $v_clone_files
 EOF
-    bash -x $sc_tmp.sh
-  
-    virsh start ${p_clone_vm}
-    
-  
-    vm-list.sh | egrep "${p_clone_vm}|^ Id"
-  }
-  f_clone
-  f-ip-wait-kvm-to-acquire ${p_clone_vm} 120 ; v_ip=$r_ip
-  #f_change_hostname_ip
-  #f-ip-clear-arp $v_ip
-  #f-ssh-extra-arg-conf $p_os
 
-  vm-list.sh | egrep " ${p_clone_vm} |^ Id"
+cat << EOF > $sc_tmp.sh.1
+bash -xc "mkdir -p  $v_clone_dirs"
+
+EXEC=y f-exec-temp-script $sc_tmp.sh
+
+bash -xc "virsh start ${VM_CLONE}"
   
-#f-cmd-verbose "ssh-keygen -f /home/totel/.ssh/known_hosts -R ${p_clone_ip} # Cleanup known hosts for new vm"
-#f-cmd-verbose "ssh -o StrictHostKeyChecking=no $v_ssh_extra ${p_clone_ip} 'hostname' > /dev/null  # this will prevent any prompt for succeding ssh connections" 
-#f-cmd-verbose "ssh $v_ssh_extra root@${p_clone_ip} 'hostname' # test " 
+vm-list.sh | egrep "${VM_CLONE}|^ Id"
+  
+EOF
+
+# EXEC=y f-exec-temp-script $sc_tmp.sh.1
+
+VM=${VM_CLONE} WAIT_MINUTE=2 f-ip-wait-kvm-to-acquire ; # returns $r_ip
+ 
+vm-list.sh | egrep " ${VM_CLONE} |^ Id"
+
+OS=${OS} VM=${VM_CLONE} NEW_IP=${IP_CLONE} vm-change-ip.sh
+
+  #f_change_hostname_ip
 else
   f_use
 fi
