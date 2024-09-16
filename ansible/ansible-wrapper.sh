@@ -25,7 +25,7 @@ HOSTS_FILE=${HOSTS_FILE:=/etc/ansible/hosts} # default value
 EXTRA_ARGS=${EXTRA_ARGS:-"--become"} # default value
 
 if [ ! -z "${YAML}" -a ! -z "${ANSIBLE_HOST}" ]; then # if required variables are not empty
-  MARKER_WIDTH=105 f-marker $sc_name1 ${ANSIBLE_HOST} $(basename ${YAML})
+  f-marker $sc_name1 ${ANSIBLE_HOST} $(basename ${YAML})
 else
     # Ensure required variables are defined
   echo "
