@@ -1,0 +1,61 @@
+-
+  name: Manage packages using yum with ansible loop(Recommended)
+  hosts: all
+  become: yes
+  vars:
+    package_list:
+      - nmap
+      - wget
+  tasks:
+    - name: Install packages from the list
+      yum:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ package_list }}"
+
+    - name: Remove packages from the list
+      yum:
+        name: "{{ item }}"
+        state: absent
+      loop: "{{ package_list }}"
+
+-
+  name: Manage packages using yum with ansible with_items(Deprecated)
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install packages
+      yum:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - nmap
+        - wget
+
+    - name: Remove packages
+      yum:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - nmap
+        - wget
+
+-
+  name: Manage packages using yum
+  hosts: all
+  become: yes  # For privilege escalation (similar to sudo)
+  tasks:
+    - name: Install nmap and wget
+      yum:
+        name:
+          - nmap
+          - wget
+        state: present
+
+    - name: Remove nmap and wget
+      yum:
+        name:
+          - nmap
+          - wget
+        state: present
+
