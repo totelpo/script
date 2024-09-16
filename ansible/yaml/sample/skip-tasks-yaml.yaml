@@ -1,0 +1,19 @@
+# https://chatgpt.com/c/66e789bd-9308-8001-94b8-5ffa492d341e
+---
+- name: Conditionally include tasks based on OS version
+  hosts: localhost
+  gather_facts: yes
+  tasks:
+    - name: Check if RHEL major version is greater than 7
+      set_fact:
+        include_tasks: "{{ ansible_facts['os_family'] != 'RedHat' or ansible_facts['distribution_major_version'] | int > 7 }}"
+
+    - name: Include yaml(tasks.yml) if OS is not RHEL 7 or below
+      include_tasks: tasks.yaml
+      when: include_tasks
+
+    - name: Continue task
+      debug:
+        msg: "This is task2"
+
+
