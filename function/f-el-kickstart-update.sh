@@ -35,7 +35,7 @@ sed -i "s|osadmin|${VM_OS_ADMIN}|g" ${KS_TMP}
 sed -i "s|KEY_PUB=.*|KEY_PUB='$(cat ${VM_KEY_FILE}.pub)'|g" ${KS_TMP}
 # sh -xc "grep '^network' ${KS_TMP}"
 EOF
-	EXEC=y MARKER_WIDTH=95 f-exec-temp-script $fn_tmp.sh
+	EXEC=y f-exec-temp-script $fn_tmp.sh
 fi
 }
 
