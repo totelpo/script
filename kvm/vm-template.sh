@@ -30,7 +30,7 @@ v_sh=${sc_tmp}-${VM}.sh
 v_yaml=${TMPDIR}/template-${OS}.yaml
 v_hosts_file=${TMPDIR}/template-ansible-hosts
 
-f-ip-to-server-id  # returns r_ansible_host
+f-ip-to-server-id > /dev/null # returns r_ansible_host
 
 
 <<COMMENT
@@ -57,7 +57,7 @@ f-el-kickstart-update(){
 DISK_GB="${DISK_GB:=20}" # default
 
 if [ ! -z "${OS}" -a ! -z "${VM}" -a ! -z "${IP}" ]; then # if required variables are not empty
-  MARKER_WIDTH=105 f-marker $sc_name1 OS=${OS} VM=${VM} IP=${IP}  # MARKER_WIDTH=105 for main script; MARKER_WIDTH=100(default) for minor script
+  f-marker $sc_name1 OS=${OS} VM=${VM} IP=${IP}  # MARKER_WIDTH=105 for main script; MARKER_WIDTH=100(default) for minor script
   set -e; check-os-support.sh; set +e
 else
   # Ensure required variables are defined
@@ -251,23 +251,29 @@ EOF
   fi
 }
 f_el_x(){
+  (
+    cat << EOF
+(
+set -e
+EOF
+
   if [ "${OS}" = "el7" -o "${OS}" = "el8" -o "${OS}" = "el9" ]; then
-  cat << EOF > ${v_sh}.tmp
+    cat << EOF
 EXEC=y VM=${VM} OS=${OS} KS=${OS}.ks PROTO=static IP=${IP} DISK_GB=${DISK_GB} RAM_GB=2 CPU=2 kvm-el.sh 
 EOF
   else
-  cat << EOF > ${v_sh}.tmp
+    cat << EOF
 EXEC=y VM=${VM} KS=${OS}.ks PROTO=static IP=${IP} f-kvm-${OS} 1
 EOF
-  fi
+  fi 
+  ) > ${v_sh}.tmp
+
   cp ${SCRIPT_DIR}/ansible/yaml/template-el-7-8-9.yaml ${v_yaml}
   sed -i "s|el-7-8-9|${OS}|g" ${v_yaml}
+
   cat << EOF >> ${v_sh}.tmp
 
-(
-set -e
-
-VM=${VM} f-get-kvm-ip   # return r_ansible_host
+VM=${VM} f-get-kvm-ip > /dev/null  # return r_ansible_host
 YAML=${v_yaml} ANSIBLE_HOST=${r_ansible_host} ansible-wrapper.sh
 IP=${IP} vm-os-admin-set-env.sh
 IP=${IP} vm-copy-scripts.sh
@@ -277,6 +283,7 @@ IP=${IP} vm-copy-scripts.sh
 echo "\nVM template ${VM} is now complete.\n"
 )
 EOF
+
   if [ "${EXEC}" = y ]; then
     f-exec-temp-script ${v_sh}.tmp
   else
