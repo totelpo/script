@@ -31,7 +31,8 @@ vi ${GITHUB_DIR}/script/env/env_totel.sh
 cat << EOF > ~/.ssh/config
 Host 192.168.122.*
     User ${VM_OS_ADMIN}
-    IdentityFile ~/.ssh/id_rsa_kvm
+    StrictHostKeyChecking no
+    UserKnownHostsFile=/dev/null
 EOF
 
 / 6 | NFS
