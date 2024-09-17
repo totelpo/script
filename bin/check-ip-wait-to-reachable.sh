@@ -4,7 +4,6 @@
 sc_name=$0
 source ${ENV_DIR}/env_function.sh
 source ${ENV_DIR}/env_script.sh
-# f-marker $sc_name1 $p_all_input_parameters  # move after all the checks
 
 f_use(){
           echo "
@@ -17,7 +16,7 @@ exit
 }
 
 if [ ! -z "${IP}" ]; then
-  f-marker $sc_name1 $p_all_input_parameters
+  MARKER_WIDTH=$((MARKER_WIDTH*75/100)) f-marker $sc_name1 $p_all_input_parameters
 else
   f_use
 fi
