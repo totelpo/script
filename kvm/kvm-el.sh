@@ -116,7 +116,7 @@ EOF
 
   if [ ! "${KS}" = "no" ]; then
     cat << EOF
-VM=${VM} WAIT_MINUTE=9 check-auto-shutdown-then-start.sh
+VM=${VM} WAIT_MINUTE=9 check-vm-shutdown-then-start.sh
 IP=${IP}
 EOF
   else
