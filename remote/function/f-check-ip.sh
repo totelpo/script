@@ -7,8 +7,8 @@ f-check-ip(){
     echo "Invalid IP ${NEW_IP} . IP must be 192.168.122.X"
     exit 1
   fi
-  if [ "${v_old_ip}" = "${NEW_IP}" -o "${NEW_IP}" = "0" ]; then
-    echo -e "\nNo IP changed. Old(${v_old_ip}) and new(${NEW_IP}) IP are the same.\n"
+  if [ "${OLD_IP}" = "${NEW_IP}" -o "${NEW_IP}" = "0" ]; then
+    echo -e "\nNo IP changed. Old(${OLD_IP}) and new(${NEW_IP}) IP are the same.\n"
     exit
   fi
   bash -xc "ping -c 1 ${NEW_IP} > /dev/null"
