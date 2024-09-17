@@ -39,9 +39,18 @@ ANSIBLE_HOSTS_FILE=/etc/ansible/hosts
 ANSIBLE_YAML_DIR=${SCRIPT_DIR}/ansible/yaml
 export ANSIBLE_HOSTS_FILE ANSIBLE_YAML_DIR
 
+# script marker
+TERM=xterm
+MARKER_WIDTH="${MARKER_WIDTH:=$((`tput cols`*95/100))}"
+MARKER=`eval "printf '#%.0s' {1..$MARKER_WIDTH}"`
+export TERM MARKER_WIDTH MARKER
+
+read -r NET_DEV NET_IP <<< $(ip -4 -o addr show | awk '!/ lo / {print $2, $4}' | cut -d/ -f1 | head -n 1)
+export NET_DEV NET_IP
+
 export MY_CNF_KVM=${CONF_DIR}/kvm-my.cnf
 
-# If not running interactively, don't do anything as doing an echo command below make ansible fail
+# If not running interactively, don't do anything as doing an echo command below make ansible and rsync fail
 case $- in
     *i*) ;;
       *) return;;
