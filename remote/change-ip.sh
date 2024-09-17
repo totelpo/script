@@ -5,36 +5,35 @@ sc_name=$0
 
 source ${ENV_DIR}/env_function.sh
 source ${ENV_DIR}/env_script.sh
+source ${ENV_DIR}/env_server_info.sh # NETWORK_DEVICE NETWORK_IP OPERATING_SYSTEM
 
 f_use(){
   echo "
 USAGE :
-LOGFILE=/tmp/${sc_name2}.log OS=el9  NEW_IP=192.168.122.91 $sc_name1 
+LOG=/tmp/${sc_name2}.log NEW_IP=192.168.122.91 $sc_name1 
 "
   exit
 }
 
-LOGFILE="${LOGFILE:=${sc_tmp}.log}"
+LOG="${LOG:=${sc_tmp}.log}"
+OS="${OS:=${OPERATING_SYSTEM}}"
+OLD_IP="${OLD_IP:=${NETWORK_IP}}"
 
-if [ ! -z "${OS}" -a ! -z "${NEW_IP}" ]; then # if required variables are not empty
+if [ ! -z "${NEW_IP}" -a ! -z "${NETWORK_DEVICE}" -a ! -z "${OLD_IP}" ]; then # if required variables are not empty
   f-marker $sc_name1 ${OS} NEW_IP=${NEW_IP}
-  set -e; check-os-support.sh; set +e
+  set -e; OS=${OS} check-os-support.sh; set +e
 
-  source ${ENV_DIR}/env_server_info.sh
-  v_dev=${NET_DEV}
-  v_old_ip=${NET_IP}
-
-  if   [ -z "${v_dev}" ]; then
-    echo "No device found. v_dev=${v_dev}."
+  if   [ -z "${NETWORK_DEVICE}" ]; then
+    echo "No device found. NETWORK_DEVICE=${NETWORK_DEVICE}."
     exit 1
-  elif [ -z "$v_old_ip{}" ]; then
-    echo "No IP found. v_old_ip=${v_old_ip}."
+  elif [ -z "$OLD_IP{}" ]; then
+    echo "No IP found. OLD_IP=${OLD_IP}."
     exit 1
   fi
 
   f_change_ip_network_scripts(){
     f-marker ${FUNCNAME[0]}
-    v_cfg=/etc/sysconfig/network-scripts/ifcfg-${v_dev}
+    v_cfg=/etc/sysconfig/network-scripts/ifcfg-${NETWORK_DEVICE}
     if [ ! -f $v_cfg ]; then
       ls -lh $v_cfg
       exit
@@ -48,8 +47,8 @@ if [ ! -z "${OS}" -a ! -z "${NEW_IP}" ]; then # if required variables are not em
 ;s/^NETMASK=.*/NETMASK=255.255.255.0/
 " $v_cfg
 
-    ifdown ${v_dev}
-    ifup   ${v_dev}
+    ifdown ${NETWORK_DEVICE}
+    ifup   ${NETWORK_DEVICE}
     sleep 5
   }
   
@@ -71,7 +70,7 @@ network:
   version: 2
   renderer: networkd
   ethernets:
-    ${v_dev}:
+    ${NETWORK_DEVICE}:
       dhcp4: no
       addresses:
         - ${NEW_IP}/24
@@ -90,11 +89,11 @@ EOF
     v_conf=/etc/network/interfaces
     cp -nv $v_conf $v_conf.bkp
     set +e
-    grep "^iface ${v_dev} inet dhcp" $v_conf 
+    grep "^iface ${NETWORK_DEVICE} inet dhcp" $v_conf 
     if [ $? -eq 0 ]; then
-      sed -i "/^iface ${v_dev} inet dhcp/d" $v_conf
+      sed -i "/^iface ${NETWORK_DEVICE} inet dhcp/d" $v_conf
       cat << EOF >> $v_conf
-iface ${v_dev} inet static
+iface ${NETWORK_DEVICE} inet static
         address ${NEW_IP}
         netmask 255.255.255.0
         gateway 192.168.122.1
@@ -136,7 +135,7 @@ arp -en
     fi
   }
 
-  echo -e "\n# Logging to : ${LOGFILE}\n"
+  echo -e "\n# Logging to : ${LOG}\n"
 
   (
   f-check-ip
@@ -164,7 +163,7 @@ arp -en
   echo
   bash -xc "df -t nfs4 -h"
   f-info-ip
-  ) 2>&1 &> ${LOGFILE}
+  ) 2>&1 &> ${LOG}
 
 else
   f_use
