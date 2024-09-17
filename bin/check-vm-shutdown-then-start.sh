@@ -16,7 +16,7 @@ exit
 }
 
 if [ ! -z "${VM}" -a ! -z "${WAIT_MINUTE}" ]; then
-  f-marker $sc_name1 $p_all_input_parameters
+  MARKER_WIDTH=$((MARKER_WIDTH*75/100)) f-marker $sc_name1 $p_all_input_parameters
 else
   f_use
 fi
