@@ -28,6 +28,8 @@ CONF_DIR=${SCRIPT_DIR}/conf
 KVM_DIR=/vm/kvm
 export ENV_DIR FUNCTION_DIR CONF_DIR KVM_DIR 
 
+source ${ENV_DIR}/env_server_info.sh
+
 VM_OS_ADMIN=osadmin
 VM_OS_ADMIN_PASS=abc123
 VM_DOMAIN=localdomain
@@ -45,10 +47,8 @@ MARKER_WIDTH="${MARKER_WIDTH:=$((`tput cols`*95/100))}"
 MARKER=`eval "printf '#%.0s' {1..$MARKER_WIDTH}"`
 export TERM MARKER_WIDTH MARKER
 
-read -r NET_DEV NET_IP <<< $(ip -4 -o addr show | awk '!/ lo / {print $2, $4}' | cut -d/ -f1 | head -n 1)
-export NET_DEV NET_IP
-
 export MY_CNF_KVM=${CONF_DIR}/kvm-my.cnf
+
 
 # If not running interactively, don't do anything as doing an echo command below make ansible and rsync fail
 case $- in
