@@ -2,4 +2,5 @@
 # Use by vm-copy-scripts.sh
 env_function.sh
 env_script.sh
+env_server_info.sh
 
