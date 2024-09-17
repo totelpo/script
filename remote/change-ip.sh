@@ -20,12 +20,15 @@ if [ ! -z "${OS}" -a ! -z "${NEW_IP}" ]; then # if required variables are not em
   f-marker $sc_name1 ${OS} NEW_IP=${NEW_IP}
   set -e; check-os-support.sh; set +e
 
- #v_dev="`ip a | grep -v '^ ' | grep -v ' lo:' | head -1 | awk '{ print $2 }' | sed 's/://'`"
- v_dev=$(ip -o link show | awk -F': ' '{print $2}' | sed -n '2p')
-  v_old_ip="`ip -4 addr show  dev ${v_dev} | grep inet | awk '{ print $2 }' | cut -d'/' -f1`"
+  source ${ENV_DIR}/env_server_info.sh
+  v_dev=${NET_DEV}
+  v_old_ip=${NET_IP}
 
-  if [ -z "${v_dev}" ]; then
+  if   [ -z "${v_dev}" ]; then
     echo "No device found. v_dev=${v_dev}."
+    exit 1
+  elif [ -z "$v_old_ip{}" ]; then
+    echo "No IP found. v_old_ip=${v_old_ip}."
     exit 1
   fi
 
