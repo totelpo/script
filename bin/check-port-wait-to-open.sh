@@ -16,7 +16,7 @@ exit
 }
 
 if [ ! -z "${IP}" -a ! -z "${PORT}" -a ! -z "${WAIT_MINUTE}" ]; then
-  f-marker $sc_name1 IP=${IP} PORT=${PORT} WAIT_MINUTE=${WAIT_MINUTE}
+  MARKER_WIDTH=$((MARKER_WIDTH*75/100)) f-marker $sc_name1 IP=${IP} PORT=${PORT} WAIT_MINUTE=${WAIT_MINUTE}
 else
   f_use
 fi
