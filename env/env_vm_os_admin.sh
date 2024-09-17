@@ -15,12 +15,23 @@ if [ -z "${TMPDIR}" ]; then # Check if variable is empty
   fi
 fi
 export PATH PATH_ORIG PATH_MISC TMPDIR SCRIPT_DIR 
+EXEC=n
+export EXEC
 
 ENV_DIR=${SCRIPT_DIR}/env
 FUNCTION_DIR=${SCRIPT_DIR}/function
 CONF_DIR=${SCRIPT_DIR}/conf
-
 export ENV_DIR FUNCTION_DIR CONF_DIR
+
+# script marker
+TERM=xterm
+MARKER_WIDTH="${MARKER_WIDTH:=$((`tput cols`*95/100))}"
+MARKER=`eval "printf '#%.0s' {1..$MARKER_WIDTH}"`
+export TERM MARKER_WIDTH MARKER
+
+read -r NET_DEV NET_IP <<< $(ip -4 -o addr show | awk '!/ lo / {print $2, $4}' | cut -d/ -f1 | head -n 1)
+export NET_DEV NET_IP
+
 
 # If not running interactively, don't do anything as doing an echo command below make ansible fail
 case $- in
