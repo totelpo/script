@@ -11,8 +11,8 @@ f_use(){
   echo "
 # USAGE:"
   cat << EOF | column -t
-OS=el9 VM=el9-091 NEW_IP=192.168.122.91 $sc_name1
-OS=el8 VM=el8-081 NEW_IP=192.168.122.81 $sc_name1
+VM=el9-091 NEW_IP=192.168.122.91 $sc_name1
+VM=el8-081 NEW_IP=192.168.122.81 $sc_name1
 EOF
 exit 1
 }
@@ -35,7 +35,7 @@ fi
 
 set -e
 
-f-cmd-verbose "ssh -o StrictHostKeyChecking=no ${r_ip} '(. ~/.bashrc; LOGFILE=~/change-ip.log OS=${OS}  NEW_IP=${NEW_IP} change-ip.sh ) 2>&1 &> ~/change-ip.log.1 &' "
+f-cmd-verbose "ssh -o StrictHostKeyChecking=no ${r_ip} 'rm -v ~/change-ip.log*; (. ~/.bashrc; LOG=~/change-ip.log NEW_IP=${NEW_IP} change-ip.sh ) 2>&1 &> ~/change-ip.log.1 &' "
 set +e
 
 f-marker "Waiting for old IP(${r_ip}) to be down."
