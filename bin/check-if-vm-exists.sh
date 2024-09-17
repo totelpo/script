@@ -14,7 +14,7 @@ exit
 }
 
 if [ ! -z "${VM}" ]; then # if required variables are not empty
-  f-marker $sc_name1 $p_all_input_parameters
+  MARKER_WIDTH=$((MARKER_WIDTH*75/100)) f-marker $sc_name1 $p_all_input_parameters
 else
   f_use
 fi
