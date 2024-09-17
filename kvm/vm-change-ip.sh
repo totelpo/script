@@ -50,7 +50,7 @@ until (ping -c 1 ${NEW_IP} > /dev/null); do
   printf "."
   sleep 5
 done
-f-marker "New IP(${NEW_IP}) is now reachable."
+echo -e "\nNew IP(${NEW_IP}) is now reachable.\n"
 
-VM=${VM} f-get-kvm-ip > /dev/null
+f-marker "VM status"
 vm-list.sh | egrep " ${VM} |^ Id"
