@@ -52,5 +52,7 @@ until (ping -c 1 ${NEW_IP} > /dev/null); do
 done
 echo -e "\nNew IP(${NEW_IP}) is now reachable.\n"
 
+f-cmd-verbose "ssh-keygen -f /home/totel/.ssh/known_hosts -R ${NEW_IP}"
+
 f-marker "VM status"
 vm-list.sh | egrep " ${VM} |^ Id"
