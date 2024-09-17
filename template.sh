@@ -17,11 +17,11 @@ exit 1
 }
 
 # Variables with default values
-#VM="${VM:=el9-090}" 
-#IP="${IP:=192.168.122.90}"
+CHECK="${CHECK:="y"}" 
 
 if [ ! -z "${VM}" -a ! -z "${IP}" ]; then # if required variables are not empty
-  MARKER_WIDTH=${COLUMNS} f-marker VM=${VM} IP=${IP} $sc_name1
+  f-marker VM=${VM} IP=${IP} $sc_name1
+# MARKER_WIDTH=$((MARKER_WIDTH*75/100)) f-marker VM=${VM} IP=${IP} $sc_name1  # for minor scripts/checks
   set -e; check-os-support.sh; set +e
 else
   # Ensure required variables are defined
