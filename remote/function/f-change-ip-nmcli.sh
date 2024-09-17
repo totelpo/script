@@ -3,9 +3,8 @@ f-change-ip-nmcli(){
   if [ ! -z "${NEW_IP}" ]; then # if required variables are not empty
     f-marker ${FUNCNAME[0]}
     set +e  ### disable exit-on-error
-    v_conn_dev=`nmcli -t -f NAME,DEVICE conn | grep ":${v_dev}"`   # nmcli conn show
+    v_conn_dev=`nmcli -t -f NAME,DEVICE conn | grep ":${NETWORK_DEVICE}"`   # nmcli conn show
     v_conn_name=`echo "$v_conn_dev" | cut -d':' -f1`
-    # Rename connection
   
     # set IP
     f-marker "Update IP settings"
@@ -20,9 +19,9 @@ nmcli connection up "${v_conn_name}"
 sleep 2
 "
   
-    if [ ! "${v_dev}" = "${v_conn_name}" ]; then 
+    if [ ! "${NETWORK_DEVICE}" = "${v_conn_name}" ]; then 
       f-marker "Rename connection name to match device name."
-      bash -xc "nmcli con mod "${v_conn_name}" con-name ${v_dev}" ;
+      bash -xc "nmcli con mod "${v_conn_name}" con-name ${NETWORK_DEVICE}" ;
     fi
   
   fi
