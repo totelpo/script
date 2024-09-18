@@ -1,4 +1,5 @@
 f-get-kvm-ip(){
+# Retruns r_ip = $r_ip
 if [ ! -z "${VM}" ]; then 
  #v_mac=`virsh dumpxml   ${VM} | grep "mac address" | head -1 | awk -F\' '{ print $2}'` # another way to get MAC address
   v_mac=`virsh domiflist ${VM} | awk '{ print $5 }' | grep . | sed '1d'`
@@ -18,11 +19,6 @@ if [ ! -z "${VM}" ]; then
     else
       r_ip=${v_ips}
     fi
-
-    echo "
-# r_ip = $r_ip
-IP=$r_ip f-ip-to-server-id  # for r_ansible_host
-" 
   else
     echo "KVM guest(${VM}) has no IP: v_ips=${r_ip} ." 
   fi
