@@ -1,4 +1,4 @@
-f-ip-to-server-id(){
+f-ip-to-ansible-host(){
   r_server_id=`echo ${IP} | awk -F'.' '{ print $NF }'`
   r_server_id_pad=$(printf "%03d\n" $r_server_id)
   r_ansible_host=s${r_server_id_pad}
