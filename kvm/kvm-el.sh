@@ -121,12 +121,13 @@ IP=${IP}
 EOF
   else
     cat << EOF
-VM=${VM} WAIT_MINUTE=6 f-ip-wait-kvm-to-acquire; IP=\${r_ip}
+VM=${VM} WAIT_MINUTE=6 wait-kvm-ip.sh; 
+VM=${VM} f-get-kvm-ip > /dev/null; IP=\${r_ip}
 EOF
   fi
 
   cat << EOF
-IP=\${IP}  PORT=22  WAIT_MINUTE=9  check-port-wait-to-open.sh
+IP=\${IP}  PORT=22  WAIT_MINUTE=9  wait-port-open.sh
 
 # OS=${OS} IP=\${IP} passwordless-ssh.sh
 f-marker "Clear old entries for \${IP} on ~/.ssh/known_hosts"
