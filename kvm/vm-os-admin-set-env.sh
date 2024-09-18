@@ -43,14 +43,13 @@ if [ ! -z "${IP}" ]; then
         path: ${v_dest}
       register: file_check
 
-    - name: Copy file to remote(${v_dest}) if it does not exist
+    - name: Copy or replace file to remote(${v_dest})
       copy:
         src: ${v_src}
         dest: ${v_dest}
         mode: '0644'
         owner: ${VM_OS_ADMIN}
         group: ${VM_OS_ADMIN}
-      when: not file_check.stat.exists
 
     - name: Ensure the line is present in .bashrc
       lineinfile:
