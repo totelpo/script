@@ -51,5 +51,6 @@ else
   echo -e "\n[ERROR] Invalid value WAIT_FOR=${WAIT_FOR}\n"
   f_use
 fi
-echo -e "\nIP ${IP} is now ${WAIT_FOR}.\n"
+echo -e "\nWaited ${v_timeout1} seconds (about $((v_timeout1/60)) minutes)."
+echo -e "\n[SUCCESS] IP ${IP} is now ${WAIT_FOR}.\n"
 
