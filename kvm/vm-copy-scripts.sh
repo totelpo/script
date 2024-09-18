@@ -42,6 +42,7 @@ cd ${SCRIPT_DIR}
 pwd
 sh -xc "rsync -a remote/*.sh          ${IP}:script/bin/"
 sh -xc "rsync -a remote/function/*.sh ${IP}:script/function/"
+sh -xc "rsync -a ~/.vimrc             ${IP}:"
 
 f_main function
 f_main env
