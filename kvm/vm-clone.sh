@@ -87,11 +87,12 @@ vm-list.sh | egrep "${VM_CLONE}|^ Id"
   
 EOF
 
+set -e
 STAGE=${STAGE:="all"}
 if   [ "${STAGE}" = "all" -o "${STAGE}" = "clone" ]; then
   rm -fv $sc_tmp-stage-*.completed
   EXEC=y f-exec-temp-script $sc_tmp.sh.clone
-  VM=${VM_CLONE} WAIT_MINUTE=2 f-ip-wait-kvm-to-acquire ; # returns $r_ip
+  VM=${VM_CLONE} WAIT_MINUTE=2 wait-kvm-ip.sh
   f-marker "VM status"
   vm-list.sh "${VM_CLONE}"
   f-marker "VM cloning competed"
