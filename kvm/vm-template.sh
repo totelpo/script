@@ -30,7 +30,7 @@ v_sh=${sc_tmp}-${VM}.sh
 v_yaml=${TMPDIR}/template-${OS}.yaml
 v_hosts_file=${TMPDIR}/template-ansible-hosts
 
-f-ip-to-server-id > /dev/null # returns r_ansible_host
+f-ip-to-ansible-host > /dev/null # returns r_ansible_host
 
 
 <<COMMENT
@@ -273,7 +273,6 @@ EOF
 
   cat << EOF >> ${v_sh}.tmp
 
-VM=${VM} f-get-kvm-ip > /dev/null  # return r_ansible_host
 YAML=${v_yaml} ANSIBLE_HOST=${r_ansible_host} ansible-wrapper.sh
 IP=${IP} vm-os-admin-set-env.sh
 IP=${IP} vm-copy-scripts.sh
