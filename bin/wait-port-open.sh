@@ -31,10 +31,10 @@ until nc -zv ${IP} ${PORT} 2> /dev/null; do
   sleep $v_sleep
   v_timeout1=$((v_timeout1+v_sleep))
   if [ ${v_timeout1} -gt ${v_timeout} ]; then
-    echo -e "\nIP ${IP}:${PORT} is still NOT open after ${WAIT_MINUTE} minute timeout reachead. Please check the server.\n"
+    echo -e "\n[FAILED] IP ${IP}:${PORT} is still NOT open after ${WAIT_MINUTE} minute timeout reachead. Please check the server.\n"
     exit 1
   fi
 done
 echo -e "\nWaited ${v_timeout1} seconds (about $((v_timeout1/60)) minutes)."
-echo -e "\n${IP} port ${PORT} is now open.\n"
+echo -e "\n[SUCCESS] ${IP} port ${PORT} is now open.\n"
 
