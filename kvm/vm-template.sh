@@ -279,7 +279,8 @@ IP=${IP} vm-copy-scripts.sh
 # EXEC=y f-ansible-repo-percona-yum-install  ${r_ansible_host}            n
 # EXEC=y f-ansible-repo-mysql-yum-install    ${r_ansible_host} ${OS} ''   n
 # EXEC=y f-ansible-repo-mmariadb-yum-install ${r_ansible_host} ${OS} 11.2 n
-echo "\nVM template ${VM} is now complete.\n"
+f-marker Done
+echo "VM template ${VM} successfully completed."
 )
 EOF
 
