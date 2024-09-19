@@ -31,11 +31,11 @@ until ( virsh list --all | grep " ${VM} " | grep 'shut off' 2>&1 &> /dev/null );
   sleep $v_sleep
   v_timeout1=$((v_timeout1+v_sleep))
   if [ ${v_timeout1} -gt ${v_timeout} ]; then
-    echo -e "\n${VM} is still up after ${WAIT_MINUTE} minute timeout reachead. Please check the server with command :\nvirsh console ${VM}"
+    echo -e "[FAILED] \n${VM} is still up after ${WAIT_MINUTE} minute timeout reachead. Please check the server with command :\nvirsh console ${VM}"
     exit 1
   fi
 done
-echo -e "\nWaited ${v_timeout1} seconds (about $((v_timeout1/60)) minutes).\n"
+echo -e "\n[SUCCESS] Waited ${v_timeout1} seconds (about $((v_timeout1/60)) minutes).\n"
 virsh list --all | grep " ${VM} "
 echo
 sh -xc "virsh start ${VM}"
