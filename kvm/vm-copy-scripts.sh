@@ -4,7 +4,6 @@ sc_name=$0
 
 source ${ENV_DIR}/env_function.sh
 source ${ENV_DIR}/env_script.sh
-source ${ENV_DIR}/env_server_info.sh
 
 v_log=$sc_tmp.log
 
@@ -19,7 +18,7 @@ exit
 }
 
 if [ ! -z "${IP}" ]; then
-  f-marker $sc_name1 $p_all_input_parameters
+  f-marker IP=${IP} $sc_name1
   f-check-if-ip-is-reachable
 else
   f_use
