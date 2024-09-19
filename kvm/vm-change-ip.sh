@@ -35,24 +35,13 @@ fi
 
 set -e
 
-f-cmd-verbose "ssh -o StrictHostKeyChecking=no ${r_ip} 'rm -v ~/change-ip.log*; (. ~/.bashrc; LOG=~/change-ip.log NEW_IP=${NEW_IP} change-ip.sh ) 2>&1 &> ~/change-ip.log.1 &' "
+f-exec-command "ssh -o StrictHostKeyChecking=no ${r_ip} 'rm -v ~/change-ip.log*; (. ~/.bashrc; LOG=~/change-ip.log NEW_IP=${NEW_IP} change-ip.sh ) 2>&1 &> ~/change-ip.log.1 &' "
 set +e
 
-f-marker "Waiting for old IP(${r_ip}) to be down."
-until !(ping -c 1 ${r_ip} > /dev/null); do
-  printf "."
-  sleep 5
-done
-echo -e "\nOld IP(${r_ip}) is now down."
+IP=${r_ip}   WAIT_FOR=down  wait-ip.sh
+IP=${NEW_IP} WAIT_FOR=up    wait-ip.sh
 
-f-marker "Waiting for new IP(${NEW_IP}) to be alive."
-until (ping -c 1 ${NEW_IP} > /dev/null); do
-  printf "."
-  sleep 5
-done
-echo -e "\nNew IP(${NEW_IP}) is now reachable.\n"
-
-f-cmd-verbose "ssh-keygen -f /home/totel/.ssh/known_hosts -R ${NEW_IP}"
+f-exec-command "ssh-keygen -f /home/totel/.ssh/known_hosts -R ${NEW_IP}"
 
 f-marker "VM status"
 vm-list.sh | egrep " ${VM} |^ Id"
