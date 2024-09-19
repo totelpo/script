@@ -1,4 +1,4 @@
-f-cmd-verbose(){
+f-exec-command(){
 if [ $# -eq 1 ]; then
 	fp_cmd=$1
 	vf_tmp_sh=${TMPDIR}/${FUNCNAME[0]}.tmp.sh
