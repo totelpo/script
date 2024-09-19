@@ -38,7 +38,7 @@ if [ "$1" = "h" ]; then f_use; fi
 CHECK="${CHECK:=y}"
 
 if [ ! -z "${VM}" -a ! -z "${IP}" ]; then
-  MARKER_WIDTH=${COLUMNS} f-marker $sc_name1 OS=${OS} VM=${VM} IP=${IP}
+  f-marker $sc_name1 OS=${OS} VM=${VM} IP=${IP}
   v_dir=${KVM_DIR}/${VM}
   if [ "${CHECK}" = "y" ]; then
     set -e # needed to exit if the check script fails
@@ -116,7 +116,7 @@ EOF
 
   if [ ! "${KS}" = "no" ]; then
     cat << EOF
-VM=${VM} WAIT_MINUTE=9 check-vm-shutdown-then-start.sh
+VM=${VM} WAIT_MINUTE=9 wait-kvm-shutdown-then-start.sh
 IP=${IP}
 EOF
   else
