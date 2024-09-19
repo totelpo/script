@@ -17,14 +17,14 @@ set -e
 if [ $# -eq 1 ]; then
   v_vm=$1
 
-f-cmd-verbose "virsh dominfo   $v_vm | egrep -i 'memory|cpu'"
-f-cmd-verbose "virsh dumpxml   $v_vm | egrep -i 'memory|cpu'"
-f-cmd-verbose "virsh vcpucount $v_vm"
-f-cmd-verbose "virsh domiflist $v_vm"
-f-cmd-verbose "virsh domifaddr $v_vm"
-f-cmd-verbose "virsh domif-getlink $v_vm `virsh domiflist $v_vm | grep vnet | awk '{ print $1 }'`"
-f-cmd-verbose "virsh domblklist $v_vm --details"
-f-cmd-verbose "du -shc /vm/kvm/$v_vm"
+f-exec-command "virsh dominfo   $v_vm | egrep -i 'memory|cpu'"
+f-exec-command "virsh dumpxml   $v_vm | egrep -i 'memory|cpu'"
+f-exec-command "virsh vcpucount $v_vm"
+f-exec-command "virsh domiflist $v_vm"
+f-exec-command "virsh domifaddr $v_vm"
+f-exec-command "virsh domif-getlink $v_vm `virsh domiflist $v_vm | grep vnet | awk '{ print $1 }'`"
+f-exec-command "virsh domblklist $v_vm --details"
+f-exec-command "du -shc /vm/kvm/$v_vm"
 else
   f_use
 fi
