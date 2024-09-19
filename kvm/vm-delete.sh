@@ -10,6 +10,7 @@ f_use() {
 USAGE: 
 $sc_name1 PATTERN               DELETE_DIR EXECUTE
 $sc_name1 ' c7-20.*-my80-gr '   y          n
+$sc_name1 ' el9-090 '           y          n
 
 virsh list --all
 " | sed "s|$HOME|~|g"
