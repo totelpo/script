@@ -25,18 +25,17 @@ export ENV_DIR FUNCTION_DIR CONF_DIR
 
 source ${ENV_DIR}/env_server_info.sh
 
-# script marker
-TERM=xterm
-MARKER_WIDTH="${MARKER_WIDTH:=$((`tput cols`*95/100))}"
-MARKER=`eval "printf '#%.0s' {1..$MARKER_WIDTH}"`
-export TERM MARKER_WIDTH MARKER
-
-
-# If not running interactively, don't do anything as doing an echo command below make ansible fail
+# If not running interactively, don't do anything as doing an echo command below make ansible and rsync fail
 case $- in
     *i*) ;;
       *) return;;
 esac
 echo PATH=\$PATH_ORIG:$PATH_MISC | sed "s|:|\n:|g"
 echo TMPDIR=$TMPDIR
+
+# script marker
+TERM=xterm
+MARKER_WIDTH="${MARKER_WIDTH:=$((`tput cols`*95/100))}"
+MARKER=`eval "printf '#%.0s' {1..$MARKER_WIDTH}"`
+export TERM MARKER_WIDTH MARKER
 
