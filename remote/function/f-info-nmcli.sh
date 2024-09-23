@@ -5,7 +5,6 @@ f-info-nmcli()
   bash -xc "nmcli con show"
   echo 
   bash -xc "nmcli -t -f IP4 connection show ${v_conn_name}"
-"
 }
 
 
