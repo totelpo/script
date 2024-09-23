@@ -47,7 +47,10 @@ for i_yaml in ${YAML} $(grep '^      include_tasks: ' ${YAML} | awk '{ print $NF
 do
   v_tmp_yaml=${TMPDIR}/aw-$(basename ${i_yaml})
   sh -xc "cp ${i_yaml} ${v_tmp_yaml}"
-  bash -xc "sed -i 's/^  hosts:.*/  hosts: ${ANSIBLE_HOST}/' ${v_tmp_yaml}"
+  sed -i "
+    s/^  hosts:.*/  hosts: ${ANSIBLE_HOST}/
+   ;s/^- hosts:.*/- hosts: ${ANSIBLE_HOST}/
+" ${v_tmp_yaml}
 done
 
 echo
