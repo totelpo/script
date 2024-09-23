@@ -1,0 +1,15 @@
+---
+- hosts: localhost
+# become: yes
+  tasks:
+    - name: Run multiple shell commands in a loop
+      ansible.builtin.shell: "{{ item }}"
+      loop:
+        - "echo 'Command 1: Display environemt variable'"
+        - "bash -c 'echo CONNECTION_NAME=$CONNECTION_NAME'"
+      register: command_output
+
+    - name: Print the result of each command
+      debug:
+        var: command_output.results
+
