@@ -1,0 +1,11 @@
+---
+- name: Remount NFS mounts
+  hosts: s100
+  become: yes
+  tasks:
+ 
+    - name: Remount NFS mounts
+      ansible.builtin.shell: "{{ item }}"
+      loop:
+        - "mount -t nfs -a"
+
