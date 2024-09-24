@@ -40,33 +40,21 @@ fi
 
 set -e
 
-cd /github/totelpo/script/ansible/yaml/sample
-cp -v change-ip-p?.yaml ${TMPDIR}/
+cd /github/totelpo/script/ansible/yaml
+cp -v change-ip.yaml ${TMPDIR}/
 cd ${TMPDIR}/
+line1=$(nl -ba change-ip.yaml | grep '  hosts:' | sed -n '1p' | awk '{ print $1 }')
+line3=$(nl -ba change-ip.yaml | grep '  hosts:' | sed -n '3p' | awk '{ print $1 }')
 sed -i "
- s/^  hosts:.*/  hosts: ${v_ansible_host1}/
-;s/^- hosts:.*/- hosts: ${v_ansible_host1}/
-" change-ip-p1.yaml
-sed -i "
- s/^  hosts:.*/  hosts: ${v_ansible_host2}/
-;s/^- hosts:.*/- hosts: ${v_ansible_host2}/
-" change-ip-p3.yaml
+ ${line1}s/^  hosts:.*/  hosts: ${v_ansible_host1}/
+;${line3}s/^  hosts:.*/  hosts: ${v_ansible_host2}/
+;s/\(new_ip_address:\).*/\1 ${NEW_IP}/
+;s/\(cur_ip_address:\).*/\1 ${r_ip}/
+" change-ip.yaml
 
-sed -i "
- s/\(new_ip_address: \).*/\1${NEW_IP}/
-;s|/home/.*/script/|/home/${VM_OS_ADMIN}/script/|
-" change-ip-p1.yaml
-sed -i "s/\(cur_ip_address: \).*/\1${r_ip}/"   change-ip-p2.yaml
+ansible-playbook change-ip.yaml
 
 set +e
-
-ansible-playbook change-ip-p1.yaml
-ansible-playbook change-ip-p2.yaml
-IP=${r_ip}   WAIT_FOR=down  wait-ip.sh
-IP=${NEW_IP} WAIT_FOR=up    wait-ip.sh
-ansible-playbook change-ip-p3.yaml
-
-f-exec-command "ssh-keygen -f /home/totel/.ssh/known_hosts -R ${NEW_IP}"
 
 f-marker "VM status"
 vm-list.sh | egrep " ${VM} |^ Id"
