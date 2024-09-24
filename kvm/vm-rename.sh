@@ -1,6 +1,6 @@
 #!/bin/bash
-# DESC: Clone KVM vm 
-# totel 20240816 v2.0 Change input from Positional Parameters to Environment Variable Assignment (Inline Export)
+# DESC: Rename KVM guest 
+# totel 20240925 v1.0
 
 sc_name=$0
 source ${ENV_DIR}/env_function.sh
@@ -10,9 +10,9 @@ f_use() {
   echo "
 # USAGE: 
 $sc_name1  VM_OLD   VM_NEW    NEW_IP        
-$sc_name1  el9-091   el9-092   192.168.122.92
-$sc_name1  el9-091   el9-092   192.168.122.92
-$sc_name1  el9-091   el9-092   192.168.122.92
+$sc_name1  el9-091  el9-092   192.168.122.92
+$sc_name1  el9-091  el9-092   192.168.122.92
+$sc_name1  el9-091  el9-092   192.168.122.92
 
 STAGE : rename|ip|all
 " | sed "s|$HOME|~|g"
