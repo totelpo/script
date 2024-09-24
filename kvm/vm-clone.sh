@@ -89,7 +89,9 @@ EOF
 
 set -e
 STAGE=${STAGE:="all"}
-if   [ "${STAGE}" = "all" -o "${STAGE}" = "clone" ]; then
+IP=${IP_CLONE} f-ip-to-ansible-host > /dev/null # returns ${r_ansible_host}
+
+if [ "${STAGE}" = "all" -o "${STAGE}" = "clone" ]; then
   rm -fv $sc_tmp-stage-*.completed
   EXEC=y f-exec-temp-script $sc_tmp.sh.clone
   VM=${VM_CLONE} WAIT_MINUTE=2 wait-kvm-ip.sh
@@ -98,16 +100,20 @@ if   [ "${STAGE}" = "all" -o "${STAGE}" = "clone" ]; then
   f-marker "VM cloning competed"
   bash -xc "touch $sc_tmp-stage-clone.completed"
   echo
-elif [ "${STAGE}" = "all" -o "${STAGE}" = "ip" ]; then
+fi
+if [ "${STAGE}" = "all" -o "${STAGE}" = "ip" ]; then
   if [ ! -f $sc_tmp-stage-clone.completed ]; then
     echo -e "\nVM was not yet executed as indicated by missing file $sc_tmp-stage-clone.completed\n"
   fi
-  OS=${OS} VM=${VM_CLONE} NEW_IP=${IP_CLONE} vm-change-ip.sh
+  VM=${VM_CLONE} NEW_IP=${IP_CLONE} an-change-ip.sh
   bash -xc "touch $sc_tmp-stage-ip.completed"
-elif [ "${STAGE}" = "all" -o "${STAGE}" = "hostname" ]; then
-  echo f_change_hostname_ip
+fi
+if [ "${STAGE}" = "all" -o "${STAGE}" = "hostname" ]; then
+  VM=${VM_CLONE}  an-change-hostname.sh
   bash -xc "touch $sc_tmp-stage-hostname.completed"
 fi
+
+vm-list.sh "${VM_CLONE}"
 
 else
   f_use
