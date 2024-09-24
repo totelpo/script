@@ -8,27 +8,40 @@ f_use(){
           echo "
  DESC: Change server hostname
 USAGE:"
-  cat << EOF | column -t
-OS=el9 ANSIBLE_HOST=s090 NEW_HOSTNAME=el9-090-s1 $sc_name1
+  cat << EOF
+VM=el9-091 $sc_name1
+VM=el9-091 NEW_HOSTNAME=node1 $sc_name1
 EOF
 exit 1
 }
 
-if [ ! -z "${OS}" -a ! -z "${ANSIBLE_HOST}" -a ! -z "${NEW_HOSTNAME}" ]; then # if required variables are not empty
-  f-marker $sc_name1 ${OS} ${ANSIBLE_HOST} ${NEW_HOSTNAME}
+if [ ! -z "${VM}" ]; then # if required variables are not empty
+  f-marker VM=${VM} $sc_name1 
 else
   # Ensure required variables are not empty (that is already declared in bashrc).
   echo -e "\nFAILED: Empty variables found.\nOS=${OS} | ANSIBLE_HOST=${ANSIBLE_HOST} | NEW_HOSTNAME=${NEW_HOSTNAME}"
   f_use
 fi
 
+NEW_HOSTNAME="${NEW_HOSTNAME:=${VM}}"
+
+VM=${VM} f-get-kvm-ip          > /dev/null # returns $r_ip
+IP=$r_ip f-ip-to-ansible-host  > /dev/null # returns $r_ansible_host
+
+
+(
+ansible-hosts-common.sh 
+cat << EOF
+${r_ansible_host} ansible_host=${r_ip}
+EOF
+) > ${TMPDIR}/hosts 
 set -e
-check-os-support.sh
 
 cat << EOF > $sc_tmp.yaml
----
-- name: Change hostname on RHEL server
-  hosts: ${ANSIBLE_HOST}
+-
+  name: Change hostname on RHEL server
+  hosts: ${r_ansible_host}
+  become: yes
   tasks:
     - name: Set the system hostname
       ansible.builtin.hostname:
@@ -50,4 +63,6 @@ cat << EOF > $sc_tmp.yaml
         backrefs: yes
 EOF
 
-bash -xc "ansible-playbook $sc_tmp.yaml --become"
+bash -xc "ansible-playbook -i ${TMPDIR}/hosts $sc_tmp.yaml"
+f-marker Verify new hostname
+bash -xc "ssh ${r_ip} hostname"
