@@ -4,7 +4,9 @@ sc_name1="${sc_name%.*}" # without extension name
 
 v_crop_sample_sh=${TMPDIR}/crop-sh.txt
 
-mkdir -p ${TMPDIR}/p  # output directory
+v_outdir=${TMPDIR}/p/ruler
+
+mkdir -p ${v_outdir}
 
 f_use() {
     echo "
@@ -26,7 +28,7 @@ exit
 p_photo="$1"; p_photo=${p_photo:=t.jpg} # default value
 
 set -e
-ls -lh ${p_photo}
+ls -lh ${p_photo} > /dev/null
 set +e
 
 b="$(basename $p_photo)"
@@ -39,7 +41,7 @@ v_y=$(identify -format "%h" $p_photo)
 f_samples(){
 echo '
 i='$p_photo'; b="$(basename $i)"; f="${b%.*}"; e="${b##*.}"  # f=filename # e=extension
-v_output=${TMPDIR}/p/$f-crop.$e '"
+v_output='${v_outdir}'/${i} '"
 v_x=$v_x
 v_y=$v_y
 v_dash_length=$v_dash_length "'
@@ -83,7 +85,7 @@ if [ $# -gt 0 ]; then
 f_pic_ruler(){
 
 j=${i%.*}; 
-v_output=${TMPDIR}/p/$f-ruler.$e 
+v_output=${v_outdir}/${b} 
 
 v_increment=$[$v_x/100]
 if [ $v_increment -gt 9 ]; then v_increment=$((v_increment/10*10)); fi
@@ -104,7 +106,8 @@ echo "
   p_dash_x=$p_dash_x
   p_dash_y=$p_dash_y
   v_dash_length=$v_dash_length
-"
+" > /dev/null
+
 #-fill blue -box white -pointsize $v_pointsize \
 convert $p_photo \
  -stroke blue -strokewidth $v_strokewidth \
@@ -137,7 +140,7 @@ convert $p_photo \
             done)" \
 ${v_output}
 
-echo -e "\n${v_output}\n"
+# echo -e "\n${v_output}\n"
 f_samples
 }
 
