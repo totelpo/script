@@ -10,6 +10,7 @@ sc_tmpdir=${TMPDIR}/${sc_name1}
 20241107 ISSUE : for PDF * Use resolution is 72 dots per inch (DPI), otherwise page print preview will not be correct
          FIX : Create a temporary file/s to fix issue when v_dpi is 300. v_density must always be 72.
          ENHANCEMENT : Add pagesize options : letter, a4, legal
+20241117 totel 
 COMMENT
 
 if [ $# -lt 1 ]; then
