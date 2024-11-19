@@ -74,7 +74,11 @@ zip -D -u -r ${v_zip}  ${v_dir_name}/* && \\
     v_pointsize=$(echo "scale=2; 0.015*${v_pixel_height}" | bc | cut -d. -f1)
     
     if [ $v_height -gt $v_width ]; then
+<<<<<<< HEAD
+       v_resize=x$((v_pixel_height-2*v_pointsize))
+=======
        v_resize=x$((v_pixel_height-2*v_pointsize))  # 792-(2*15)
+>>>>>>> c657639f28acf1f8ea33bbecef86fdcb79b6738c
     else
        v_resize=${v_pixel_width}x
     fi
