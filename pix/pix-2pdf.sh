@@ -14,19 +14,22 @@ sc_tmpdir=${TMPDIR}/${sc_name1}
 COMMENT
 
 DIR=${DIR:-5815-paulba}
+EXEC=${EXEC:-y}
+INCLUDE_FILENAME=${INCLUDE_FILENAME:-n}
 
 if [ $# -lt 3 ]; then
-cat << EOF
+  cat << EOF
 #  DESC: Convert list of pictures (jpeg, etc..) to pdf
 # USAGE: 
+
 ls ${DIR}/*.* > ${DIR}.list
 
 EOF
-cat << EOF | column -t -o' '
+  cat << EOF | column -t -o' '
 DIR=${DIR} EXEC=n INCLUDE_FILENAME=n ${sc_name} PHOTO_LIST OUTPUT_PDF      PAPER 
 DIR=${DIR} EXEC=y INCLUDE_FILENAME=y ${sc_name} ${DIR}.list  ${DIR}.pdf a4
 EOF
-cat << EOF
+  cat << EOF
 
 zip -D -u -r ${DIR}.zip  ${DIR}/*
 unzip -l ${DIR}.zip > ${DIR}-zip.list
