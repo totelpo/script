@@ -10,20 +10,27 @@ sc_tmpdir=${TMPDIR}/${sc_name1}
 20241107 ISSUE : for PDF * Use resolution is 72 dots per inch (DPI), otherwise page print preview will not be correct
          FIX : Create a temporary file/s to fix issue when v_dpi is 300. v_density must always be 72.
          ENHANCEMENT : Add pagesize options : letter, a4, legal
-20241117 totel 
+20250906 major rewrite: Use file list instead of a files as input parameter
 COMMENT
 
+DIR=${DIR:-5815-paulba}
+
 if [ $# -lt 3 ]; then
-  echo "
-ls 5815-paulba/*.j* > file.list
-totel 20250906
- DESC: Convert list of pictures (jpeg, etc..) to pdf
-USAGE: 
-EXEC=n FILENAME_HEADING=n ${sc_name} PHOTO_LIST OUTPUT_PDF      PAPER 
-EXEC=n FILENAME_HEADING=n ${sc_name} file.list  5815-paulba.pdf a4
-zip -D -u -r 5815-paulba.zip  5815-paulba/*
-unzip -l 5815-paulba.zip > 5815-paulba-zip.list
-"
+cat << EOF
+#  DESC: Convert list of pictures (jpeg, etc..) to pdf
+# USAGE: 
+ls ${DIR}/*.* > ${DIR}.list
+
+EOF
+cat << EOF | column -t -o' '
+DIR=${DIR} EXEC=n INCLUDE_FILENAME=n ${sc_name} PHOTO_LIST OUTPUT_PDF      PAPER 
+DIR=${DIR} EXEC=y INCLUDE_FILENAME=y ${sc_name} ${DIR}.list  ${DIR}.pdf a4
+EOF
+cat << EOF
+
+zip -D -u -r ${DIR}.zip  ${DIR}/*
+unzip -l ${DIR}.zip > ${DIR}-zip.list
+EOF
 else 
   echo 
   p_photo_list="$1"; p_photo_list=${p_photo_list:=photo.list} # default value
@@ -73,7 +80,7 @@ set -e
     
     if [ $v_width_over_height -lt $paper_width_over_height ]; then
       v_resize=x$((v_pixel_height-2*v_pointsize))
-      if [ "${FILENAME_HEADING}" = "n" ]; then
+      if [ "${INCLUDE_FILENAME}" = "n" ]; then
         v_resize=x$((v_pixel_height))
       fi
     else
@@ -81,7 +88,7 @@ set -e
     fi
     v_basename0=$(basename ${i_image})
     v_basename1="${v_basename0%.*}" # without extension name
-    if [ "${FILENAME_HEADING}" = "n" ]; then
+    if [ "${INCLUDE_FILENAME}" = "n" ]; then
       unset v_text
       unset v_draw
       v_rectangle_y=0
