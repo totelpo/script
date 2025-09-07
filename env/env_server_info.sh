@@ -33,4 +33,12 @@ else
 fi
 export DISTRO DISTRO_MAJOR_VERSION DISTRO_MINOR_VERSION OPERATING_SYSTEM
 
+v_interface=wlp0s20f3
+v_ip=$(ip -4 addr show ${v_interface} | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
+cat << EOF
+# Upload files here from any device on the WI-FI network
+http://192.168.1.16/upload/
+
+EOF
+
 
