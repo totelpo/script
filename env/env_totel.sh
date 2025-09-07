@@ -7,7 +7,7 @@ PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME}:$(basename $(pwd))\007"'   
 PATH_ORIG=$PATH
 GITHUB_DIR=/github/totelpo
 SCRIPT_DIR=${GITHUB_DIR}/script
-PATH_MISC=${SCRIPT_DIR}/txt2html:${SCRIPT_DIR}/pix:${SCRIPT_DIR}/kvm:${SCRIPT_DIR}/ansible:${SCRIPT_DIR}/git:${SCRIPT_DIR}/bin
+PATH_MISC=${SCRIPT_DIR}/txt2html:${SCRIPT_DIR}/pix:${SCRIPT_DIR}/kvm:${SCRIPT_DIR}/ansible:${SCRIPT_DIR}/git:${SCRIPT_DIR}/bin:${SCRIPT_DIR}/vid
 PATH=$PATH_ORIG:$PATH_MISC
 if [ -z "${TMPDIR}" ]; then # Check if variable is empty
   if   [ -d ~/t ]; then
