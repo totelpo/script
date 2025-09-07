@@ -15,12 +15,14 @@ COMMENT
 
 if [ $# -lt 3 ]; then
   echo "
-ls 2645-payapag/2645-010*.jpg > /tmp/photo.list
+ls 5815-paulba/*.j* > file.list
 totel 20250906
  DESC: Convert list of pictures (jpeg, etc..) to pdf
 USAGE: 
-EXEC=n FILENAME_HEADING=n ${sc_name} PHOTO_LIST       OUTPUT_PDF    PAPER 
-EXEC=n FILENAME_HEADING=n ${sc_name} /tmp/photo.list  /tmp/out.pdf  letter
+EXEC=n FILENAME_HEADING=n ${sc_name} PHOTO_LIST OUTPUT_PDF      PAPER 
+EXEC=n FILENAME_HEADING=n ${sc_name} file.list  5815-paulba.pdf a4
+zip -D -u -r 5815-paulba.zip  5815-paulba/*
+unzip -l 5815-paulba.zip > 5815-paulba-zip.list
 "
 else 
   echo 
@@ -42,6 +44,8 @@ else
     v_paper_width=8.5
     v_paper_height=11
   fi
+  paper_width_over_height=$(echo "1000*${v_paper_width}/${v_paper_height}" | bc)
+
   v_pixel_width=$( echo "${v_paper_width}*${v_dpi}"  | bc | cut -d. -f1)
   v_pixel_height=$(echo "${v_paper_height}*${v_dpi}" | bc | cut -d. -f1)
 
@@ -50,7 +54,7 @@ else
   l1="-resize x${v_pixel_height} -extent ${v_pixel_width}x${v_pixel_height} -gravity center"
   echo "
 mkdir -p ${sc_tmpdir}
-rm -f ${sc_tmpdir}/*.*
+rm -f ${p_out_pdf} ${sc_tmpdir}/*.*
 
 # NOTE: convert, ensure -gravity comes first before the input image
 (
@@ -65,27 +69,33 @@ set -e
     v_height=`identify -format %h ${i_image}`
     v_width=` identify -format %w ${i_image}`
     v_pointsize=$(echo "scale=2; 0.015*${v_pixel_height}" | bc | cut -d. -f1)
+    v_width_over_height=$(echo "1000*${v_width}/${v_height}" | bc)
     
-    if [ $v_height -gt $v_width ]; then
-       v_resize=x$((v_pixel_height-2*v_pointsize))
-       v_resize=x$((v_pixel_height-2*v_pointsize))  # 792-(2*15)
+    if [ $v_width_over_height -lt $paper_width_over_height ]; then
+      v_resize=x$((v_pixel_height-2*v_pointsize))
+      if [ "${FILENAME_HEADING}" = "n" ]; then
+        v_resize=x$((v_pixel_height))
+      fi
     else
-       v_resize=${v_pixel_width}x
+      v_resize=${v_pixel_width}x
     fi
     v_basename0=$(basename ${i_image})
     v_basename1="${v_basename0%.*}" # without extension name
     if [ "${FILENAME_HEADING}" = "n" ]; then
       unset v_text
+      unset v_draw
       v_rectangle_y=0
     else
       v_text="${v_basename0}"
       v_rectangle_y=${v_pointsize}
+      v_draw='\
+  -font '${v_font}' -pointsize '${v_pointsize}' -fill white \
+  -draw "rectangle 0,'${v_rectangle_y}' '${v_pixel_width}",0 gravity north fill rgba(0,0,0,0.9) text 0,0'"${v_text}"'"'"'
     fi
+
     echo '
 convert -gravity center '${i_image}' \
-  -resize '${v_resize}' -extent '${v_pixel_width}x${v_pixel_height}' \
-  -font '${v_font}' -pointsize '${v_pointsize}' -fill white \
-  -draw "rectangle 0,'${v_rectangle_y}' '${v_pixel_width}',0 gravity north fill rgba(0,0,0,0.9) text 0,0'"'${v_text}'\""' \
+  -resize '${v_resize}' -extent '${v_pixel_width}x${v_pixel_height}' '"$v_draw"' \
 '${sc_tmpdir}/${v_basename0}
   done
   v_photo_list2=${sc_tmp}.list2
@@ -104,10 +114,10 @@ EOF
 
   if [ "${EXEC}" = "y" ]; then
     echo -e "\n# Executing temporary script."
-    source ${sc_tmp}
+    bash ${sc_tmp}
   else
     echo -e "\n# Review then execute temporary script."
-    echo source ${sc_tmp}
+    echo bash ${sc_tmp}
   fi
 fi
 
